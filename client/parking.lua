@@ -211,16 +211,23 @@ end)
 
 function OpenParkingMenu(parkingNPC)
     lib.callback('rsg-wagonmaker:server:getPlayerWagons', false, function(wagons)
-        if not wagons or #wagons == 0 then
-            Notify(GetLocale('no_wagons'), 'inform')
-            return
-        end
+        -- Ensure wagons is a table even if nil
+        wagons = wagons or {}
         
-        local nuiOptions = {}
-        
-        -- Pending Transfers Option (if any)
+        -- Check for transfers first
         lib.callback('rsg-wagonmaker:server:getPendingTransfers', false, function(transfers)
-            if transfers and #transfers > 0 then
+            transfers = transfers or {}
+            
+            -- Only block if NO wagons AND NO transfers
+            if #wagons == 0 and #transfers == 0 then
+                Notify(GetLocale('no_wagons'), 'inform')
+                return
+            end
+            
+            local nuiOptions = {}
+            
+            -- Pending Transfers Option (if any)
+            if #transfers > 0 then
                 table.insert(nuiOptions, {
                     label = '📬 Pending Transfers (' .. #transfers .. ')',
                     description = 'View incoming wagon transfer offers',

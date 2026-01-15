@@ -174,14 +174,12 @@ end)
 -- ============================================================================
 -- GET NEARBY PLAYERS
 -- ============================================================================
-RSGCore.Functions.CreateCallback('rsg-wagonmaker:server:getNearbyPlayers', function(source, cb)
+RSGCore.Functions.CreateCallback('rsg-wagonmaker:server:getNearbyPlayers', function(source, cb, clientDetectedIds)
     local players = {}
-    local pCoords = GetEntityCoords(GetPlayerPed(source))
     
-    for _, playerId in ipairs(GetPlayers()) do
-        local targetPed = GetPlayerPed(playerId)
-        local tCoords = GetEntityCoords(targetPed)
-        if #(pCoords - tCoords) < 10.0 and tonumber(playerId) ~= source then
+    if clientDetectedIds and #clientDetectedIds > 0 then
+        -- Use client-detected list (Reliable)
+        for _, playerId in ipairs(clientDetectedIds) do
             local TargetPlayer = RSGCore.Functions.GetPlayer(playerId)
             if TargetPlayer then
                 table.insert(players, {
@@ -190,6 +188,23 @@ RSGCore.Functions.CreateCallback('rsg-wagonmaker:server:getNearbyPlayers', funct
                 })
             end
         end
+    else
+        -- Fallback to server-side check (Legacy / verification)
+        local pCoords = GetEntityCoords(GetPlayerPed(source))
+        for _, playerId in ipairs(GetPlayers()) do
+            local targetPed = GetPlayerPed(playerId)
+            local tCoords = GetEntityCoords(targetPed)
+            if #(pCoords - tCoords) < 10.0 and tonumber(playerId) ~= source then
+                local TargetPlayer = RSGCore.Functions.GetPlayer(playerId)
+                if TargetPlayer then
+                    table.insert(players, {
+                        source = playerId,
+                        name = TargetPlayer.PlayerData.charinfo.firstname .. ' ' .. TargetPlayer.PlayerData.charinfo.lastname
+                    })
+                end
+            end
+        end
     end
+    
     cb(players)
 end)

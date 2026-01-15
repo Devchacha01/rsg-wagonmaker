@@ -466,9 +466,26 @@ RegisterNUICallback('getEmployees', function(data, cb)
 end)
 
 RegisterNUICallback('getNearbyPlayers', function(data, cb)
+    local targetIds = {}
+    local myCoords = GetEntityCoords(PlayerPedId())
+    
+    -- Client-side check for nearby players (more reliable)
+    for _, player in ipairs(GetActivePlayers()) do
+        local targetPed = GetPlayerPed(player)
+        if targetPed ~= PlayerPedId() then
+            local targetCoords = GetEntityCoords(targetPed)
+            local dist = #(myCoords - targetCoords)
+            
+            if dist < 5.0 then
+                local serverId = GetPlayerServerId(player)
+                table.insert(targetIds, serverId)
+            end
+        end
+    end
+
     RSGCore.Functions.TriggerCallback('rsg-wagonmaker:server:getNearbyPlayers', function(players)
         cb(players)
-    end)
+    end, targetIds)
 end)
 
 RegisterNUICallback('hirePlayer', function(data, cb)
