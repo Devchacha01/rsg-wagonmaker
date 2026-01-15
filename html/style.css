@@ -1,0 +1,428 @@
+@import url('https://fonts.googleapis.com/css2?family=Rye&family=Roboto:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    user-select: none;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex !important; /* Force flex to override any potential JS slips */
+    justify-content: center;
+    align-items: center;
+}
+
+.wagon-container {
+    width: 1024px;
+    height: 682px;
+    background-image: url('img/shop_bg.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Padding for crafting background - push down below banner */
+    /* Padding for crafting background - push down below banner */
+    padding: 270px 90px 100px 90px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+/* Parking mode - use new parking background */
+.wagon-container.parking-mode {
+    width: 550px;
+    height: 780px;
+    background-image: url('img/parking_bg.jpg');
+    padding: 140px 70px 200px 70px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Rye', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1a0d05;
+    cursor: pointer;
+    padding: 8px 15px;
+    transition: all 0.2s;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.tab-btn:hover {
+    color: #000;
+    border-color: #8b5a2b;
+}
+
+.tab-btn.active {
+    border-color: #1a0d05;
+    color: #000;
+    text-decoration: underline;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #8b5a2b rgba(0, 0, 0, 0.1);
+}
+
+.wagon-list {
+    display: grid; /* Default grid, but JS will override to none/grid. */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    width: 100%;
+    padding-right: 10px;
+    padding-bottom: 100px;
+}
+
+.wagon-list.single-col {
+    grid-template-columns: 1fr !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 120px;
+    /* Ensure content clears footer */
+}
+
+/* Limit max width of single column cards so they don't stretch */
+.wagon-list.single-col .wagon-card {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.wagon-card {
+    background: rgba(230, 218, 195, 0.4);
+    border: 1px solid #a88b68;
+    border-radius: 6px;
+    border-radius: 6px;
+    padding: 10px;
+    /* Slightly reduced padding */
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    backdrop-filter: blur(1px);
+}
+
+/* Parking mode card styling - horizontal layout */
+.parking-mode .wagon-card {
+    background: rgba(255, 248, 230, 0.85);
+    border: 2px solid #8b5a2b;
+    border-radius: 8px;
+    padding: 10px 15px;
+    flex-direction: row;
+    gap: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.wagon-materials {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #2a1a0a;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    border-top: 2px solid #5c3a1b;
+    padding-top: 8px;
+    width: 100%;
+}
+
+.wagon-materials span {
+    background: rgba(92, 58, 27, 0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #8b5a2b;
+}
+
+.option-title {
+    grid-column: 1 / -1;
+    font-family: 'Rye', serif;
+    font-size: 1.3rem;
+    color: #3e2712;
+    text-align: center;
+    padding: 8px 0;
+    border-bottom: 2px solid #a88b68;
+    margin-bottom: 25px;
+    /* Increase spacing below header */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Parking mode title adjustment */
+.parking-mode .option-title {
+    margin-top: 70px;
+    /* Push below the 'Wagon Parking' banner */
+    margin-bottom: 20px;
+    border-bottom: 2px solid #5c3a1b;
+    color: #2a1a0a;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* Ensure list items are centered in parking mode */
+.parking-mode .single-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.parking-mode .single-col .wagon-card {
+    width: 80%;
+    justify-content: center;
+    text-align: center;
+}
+
+.wagon-card:hover {
+    background: rgba(255, 253, 230, 1);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border-color: #4a2c0f;
+}
+
+.wagon-icon {
+    font-size: 2rem;
+    color: #5c3a1b;
+    margin-bottom: 10px;
+}
+
+.wagon-name {
+    font-family: 'Rye', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1a0d05;
+    margin-bottom: 0;
+    text-align: left;
+    flex: 1;
+}
+
+.wagon-price {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2rem;
+    color: #1a4010;
+    font-weight: 900;
+}
+
+.wagon-desc {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95rem;
+    color: #2a1a0a;
+    text-align: center;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.footer {
+    position: absolute;
+    bottom: 40px;
+    /* Lowered to give more room */
+    right: 40px;
+    /* Adjusted for better corner placement */
+    z-index: 100;
+    /* Ensure it stays on top */
+}
+
+.key-hint {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.8rem;
+}
+
+.key-hint span {
+    border: 1px solid white;
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+/* Scrollbar tweaks */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8b5a2b;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6e4620;
+}
+
+/* Management Menu Specifics */
+.balance-card {
+    background: rgba(46, 139, 87, 0.1);
+    /* Subtle green tint background */
+    border: 2px solid #2e8b57;
+    /* Green border to emphasize money */
+    grid-column: 1 / -1;
+    /* Header style - full width */
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    /* Horizontal layout */
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+}
+
+.balance-card .wagon-desc {
+    font-size: 1.4rem;
+    /* SeaGreen for money */
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Employee Menu Styles */
+#employee-menu .wagon-card {
+    cursor: pointer;
+}
+
+#employee-list-container {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.employee-item {
+    background: rgba(230, 218, 195, 0.6);
+    border: 1px solid #a88b68;
+    border-radius: 4px;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #3e2723;
+}
+
+.employee-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.employee-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.employee-grade {
+    font-size: 0.9rem;
+    color: #5d4037;
+}
+
+.employee-actions button {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 0.8rem;
+}
+
+.employee-actions button.promote {
+    background: #388e3c;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fdf5e6;
+    background-image: url('img/paper_bg.jpg');
+    /* Reuse paper bg if available */
+    border: 2px solid #8b5a2b;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #3e2723;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #a88b68;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.player-item {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.player-item:hover {
+    background: rgba(139, 90, 43, 0.2);
+}

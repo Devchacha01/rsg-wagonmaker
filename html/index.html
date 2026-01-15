@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wagon Maker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div id="app" style="display: none;">
+        <div class="wagon-container">
+            <!-- Header Section -->
+            <div class="header">
+                <!-- Title is built into the background image, but we can add content if needed -->
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs" id="category-tabs">
+                <!-- Tabs injected via JS -->
+            </div>
+
+            <!-- Content Section -->
+            <div class="content">
+                <div class="wagon-list" id="wagon-list">
+                    <!-- Wagons will be injected here via JS -->
+                </div>
+
+                <!-- Option List (Hidden by default, used for customization) -->
+                <div class="wagon-list" id="option-list" style="display: none;"></div>
+
+                <!-- Management Menu (Hidden by default) -->
+                <div class="wagon-list" id="management-menu" style="display: none;">
+                    <div class="option-title">Management Options</div>
+
+                    <div class="wagon-card balance-card">
+                        <div class="wagon-icon"><i class="fas fa-coins"></i></div>
+                        <div class="wagon-name">Company Balance</div>
+                        <div class="wagon-desc" id="management-balance">$0.00</div>
+                    </div>
+
+                    <div class="wagon-card" onclick="triggerManagement('boss')">
+                        <div class="wagon-icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="wagon-name">Job Management</div>
+                        <div class="wagon-desc">Hire, Fire & Promote Employees</div>
+                    </div>
+
+                    <div class="wagon-card" onclick="triggerManagement('deposit')">
+                        <div class="wagon-icon"><i class="fas fa-plus-circle"></i></div>
+                        <div class="wagon-name">Deposit Funds</div>
+                        <div class="wagon-desc">Add money to company account</div>
+                    </div>
+
+                    <div class="wagon-card" onclick="triggerManagement('withdraw')">
+                        <div class="wagon-icon"><i class="fas fa-minus-circle"></i></div>
+                        <div class="wagon-name">Withdraw Funds</div>
+                        <div class="wagon-desc">Take money from company account</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Employee Menu (Hidden by default) -->
+        <div class="wagon-list" id="employee-menu" style="display: none;">
+            <div class="option-title">Employees</div>
+            <div class="wagon-card balance-card">
+                <div class="wagon-desc">Employee List</div>
+            </div>
+
+            <div id="employee-list-container">
+                <!-- Employee items injected here -->
+            </div>
+
+            <div class="wagon-card" onclick="openHireModal()">
+                <div class="wagon-icon"><i class="fas fa-plus"></i></div>
+                <div class="wagon-name">Hire New Employee</div>
+                <div class="wagon-desc">Search for nearby citizens</div>
+            </div>
+
+            <div class="wagon-card" onclick="openManagement()">
+                <div class="wagon-icon"><i class="fas fa-arrow-left"></i></div>
+                <div class="wagon-name">Back</div>
+                <div class="wagon-desc">Return to Management</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hire Modal -->
+    <div id="hire-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Person to Hire</h2>
+                <span class="close-modal" onclick="closeHireModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="nearby-players-list">
+                    <!-- Populated via JS -->
+                    <div class="player-item">Searching for nearby people...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer / Controls -->
+    <div class="footer">
+        <div class="key-hint">
+            <span>ESC</span> Close
+        </div>
+    </div>
+    </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

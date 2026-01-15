@@ -1,0 +1,52 @@
+{
+    "wagonmaker": "Wagon Maker",
+    "crafting_zone": "Wagon Crafting Area",
+    "preview_zone": "Wagon Preview Area",
+    "parking_npc": "Wagon Yard Attendant",
+    
+    "menu_title": "Wagon Maker Workshop",
+    "menu_craft": "Craft Wagon",
+    "menu_preview": "Preview Wagon",
+    "menu_customize": "Customize",
+    "menu_confirm": "Confirm & Craft",
+    "menu_cancel": "Cancel",
+    
+    "crafting_started": "Crafting %s...",
+    "crafting_complete": "You have crafted a %s!",
+    "crafting_failed": "Crafting failed!",
+    "missing_materials": "Missing materials: %s",
+    "insufficient_funds": "Insufficient funds! Need $%s",
+    "max_wagons_reached": "You already own the maximum number of wagons!",
+    "job_required": "You need to be a Wagon Maker to craft wagons!",
+    "grade_required": "Your skill level is too low to craft this wagon!",
+    
+    "parking_title": "Wagon Yard",
+    "parking_spawn": "Spawn Wagon",
+    "parking_store": "Store Wagon",
+    "parking_transfer": "Transfer Wagon",
+    "parking_sell": "Sell Wagon",
+    "parking_rename": "Rename Wagon",
+    "parking_delete": "Delete Wagon",
+    "no_wagons": "You don't own any wagons.",
+    "wagon_spawned": "Your wagon has been brought out.",
+    "wagon_stored": "Your wagon has been stored.",
+    "already_spawned": "You already have a wagon out!",
+    "wagon_not_found": "Wagon not found!",
+    
+    "transfer_title": "Transfer Wagon",
+    "transfer_player_id": "Enter Player Server ID",
+    "transfer_price": "Asking Price (0 for free)",
+    "transfer_sent": "Transfer offer sent!",
+    "transfer_received": "%s wants to transfer you a %s for $%s",
+    "transfer_accepted": "Transfer accepted!",
+    "transfer_declined": "Transfer declined.",
+    "transfer_cancelled": "Transfer cancelled by owner.",
+    
+    "preview_started": "Previewing %s - Use Q/E to rotate",
+    "preview_timeout": "Preview time expired.",
+    
+    "zone_placed": "%s zone placed successfully!",
+    "zone_removed": "Zone removed!",
+    "zone_not_found": "No zone found nearby.",
+    "no_permission": "You don't have permission to do this!"
+}
