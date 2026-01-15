@@ -35,6 +35,11 @@ CreateThread(function()
     if Config.StaticZones then
         for _, zone in ipairs(Config.StaticZones) do
             table.insert(Zones, zone)
+            
+            -- Create blip for crafting zones only (not preview zones)
+            if zone.type == 'crafting' then
+                CreateCraftingBlip(zone)
+            end
         end
         if Config.Debug then
             print('^2[RSG-WagonMaker]^7 Loaded ' .. #Config.StaticZones .. ' static zones')
@@ -44,7 +49,7 @@ CreateThread(function()
     -- Load zones from server (will add to existing static zones)
     TriggerServerEvent('rsg-wagonmaker:server:requestZones')
     
-    -- Spawn parking NPCs
+    -- Spawn parking NPCs (without blips now)
     SpawnParkingNPCs()
     
     -- Register Decorator for ID persistence
@@ -231,13 +236,51 @@ function SpawnParkingNPCs()
             })
         end
         
-        -- Create blip
-        if npc.blip.enabled then
+        -- Create parking blip
+        if npc.blip and npc.blip.enabled then
             local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, npc.coords.x, npc.coords.y, npc.coords.z)
-            Citizen.InvokeNative(0x74F74D3207ED525C, blip, npc.blip.sprite, true)
-            Citizen.InvokeNative(0x9CB1A1623062F402, blip, npc.blip.name)
-            ParkingBlips[npc.id] = blip
+            if blip and blip ~= 0 then
+                Citizen.InvokeNative(0x74F74D3207ED525C, blip, joaat("blip_ambient_horse"), true)
+                local nameStr = CreateVarString(10, 'LITERAL_STRING', npc.blip.name)
+                Citizen.InvokeNative(0x9CB1A1623062F402, blip, nameStr)
+                Citizen.InvokeNative(0xD38744167B2FA257, blip, npc.blip.scale or 0.8)
+                ParkingBlips[npc.id] = blip
+            end
         end
+    end
+end
+
+-- ========================================
+-- Crafting Zone Blip Creation
+-- ========================================
+
+local CraftingBlips = {}
+
+function CreateCraftingBlip(zone)
+    -- Map job name to display name
+    local blipNames = {
+        wagon_valentine = 'Wagon Maker - Valentine',
+        wagon_rhodes = 'Wagon Maker - Rhodes',
+        wagon_saint = 'Wagon Maker - Saint Denis',
+        wagon_blackwater = 'Wagon Maker - Blackwater',
+        wagon_strawberry = 'Wagon Maker - Strawberry',
+        wagon_armadillo = 'Wagon Maker - Armadillo',
+        wagon_tumbleweed = 'Wagon Maker - Tumbleweed'
+    }
+    
+    local blipName = blipNames[zone.requiredJob] or 'Wagon Maker'
+    
+    -- Create blip at crafting zone coordinates
+    local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, zone.x, zone.y, zone.z)
+    if blip and blip ~= 0 then
+        -- SetBlipSprite - using general store/shop sprite
+        Citizen.InvokeNative(0x74F74D3207ED525C, blip, joaat("blip_shop_store"), true)
+        -- SetBlipName
+        local nameStr = CreateVarString(10, 'LITERAL_STRING', blipName)
+        Citizen.InvokeNative(0x9CB1A1623062F402, blip, nameStr)
+        -- SetBlipScale
+        Citizen.InvokeNative(0xD38744167B2FA257, blip, 0.8)
+        CraftingBlips[zone.id] = blip
     end
 end
 

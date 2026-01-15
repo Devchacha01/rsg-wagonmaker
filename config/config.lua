@@ -105,7 +105,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Valentine",
+            name = "Parking - Valentine",
             scale = 0.8
         }
     },
@@ -125,7 +125,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Rhodes",
+            name = "Parking - Rhodes",
             scale = 0.8
         }
     },
@@ -145,7 +145,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Saint Denis",
+            name = "Parking - Saint Denis",
             scale = 0.8
         }
     },
@@ -165,7 +165,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Blackwater",
+            name = "Parking - Blackwater",
             scale = 0.8
         }
     },
@@ -185,7 +185,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Strawberry",
+            name = "Parking - Strawberry",
             scale = 0.8
         }
     },
@@ -205,7 +205,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Armadillo",
+            name = "Parking - Armadillo",
             scale = 0.8
         }
     },
@@ -225,7 +225,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Maker - Tumbleweed",
+            name = "Parking - Tumbleweed",
             scale = 0.8
         }
     }

@@ -23,6 +23,25 @@
 - **Promote/Fire**: Manage your workforce with simple UI buttons.
 - **Strict Job Locations**: Supports location-based jobs (e.g., a "Blackwater Wagon Maker" cannot access the "Valentine" management menu).
 
+### 🅿️ Parking & Storage Locations
+The script features **7 pre-configured Wagon Yards** across the map where players can spawn and store their crafted wagons:
+
+| Location | Job Name | Blip Name |
+|----------|----------|-----------|
+| Valentine | `wagon_valentine` | Parking - Valentine |
+| Rhodes | `wagon_rhodes` | Parking - Rhodes |
+| Saint Denis | `wagon_saint` | Parking - Saint Denis |
+| Blackwater | `wagon_blackwater` | Parking - Blackwater |
+| Strawberry | `wagon_strawberry` | Parking - Strawberry |
+| Armadillo | `wagon_armadillo` | Parking - Armadillo |
+| Tumbleweed | `wagon_tumbleweed` | Parking - Tumbleweed |
+
+**How Parking Works:**
+1. **Spawn**: Talk to the Wagon Yard NPC and select a wagon from your owned list to spawn it.
+2. **Store**: Drive your wagon back to any Wagon Yard and use the ox_target interaction to store it.
+3. **Persistence**: All wagons are saved to the database and persist across server restarts.
+4. **Ghost Protection**: If a wagon despawns unexpectedly, it's automatically marked as "stored" so you can spawn it again.
+
 ### 📍 Pre-Configured Locations
 The resource comes pre-setup with 7 distinct Wagon Maker workshops across the map, each capable of having its own dedicated "boss" and employees:
 1.  **Valentine** (`wagon_valentine`)

@@ -515,7 +515,6 @@ function OpenWagonStash(wagonData)
         return
     end
     
-    print('^2[RSG-WagonMaker]^7 Opening stash: ' .. stashId)
     
     -- Trigger server to open the stash (works with both ox and rsg inventory)
     TriggerServerEvent('rsg-wagonmaker:server:openWagonStash', stashId, {
@@ -526,7 +525,6 @@ function OpenWagonStash(wagonData)
 end
 
 function StoreWagon(wagonId)
-    print(string.format('^3[RSG-WagonMaker] StoreWagon called. MyWagon: %s^7', tostring(MyWagon)))
     
     -- Attempt to recover wagon if nil (e.g. after script restart or ghost wagon)
     local ped = PlayerPedId()
@@ -539,14 +537,10 @@ function StoreWagon(wagonId)
         -- Fallback: Closest vehicle (Ghost Wagon Detection)
         if veh == 0 then
              local pCoords = GetEntityCoords(ped)
-             veh = GetClosestVehicle(pCoords.x, pCoords.y, pCoords.z, 5.0, 0, 70) -- 5 meters, model/flags ignored
-             if veh ~= 0 then
-                  print('^3[RSG-WagonMaker] StoreWagon: Recovered via Proximity Fallback.^7')
-             end
+             veh = GetClosestVehicle(pCoords.x, pCoords.y, pCoords.z, 5.0, 0, 70)
         end
 
         if veh ~= 0 then
-             print('^3[RSG-WagonMaker] StoreWagon: Recovered MyWagon handle: ' .. veh .. '^7')
              MyWagon = veh
         end
     end
@@ -555,22 +549,16 @@ function StoreWagon(wagonId)
     if (not wagonId or wagonId == 0) and MyWagon and DoesEntityExist(MyWagon) then
         if DecorExistOn(MyWagon, "wagon_id") then
             local decorId = DecorGetInt(MyWagon, "wagon_id")
-            print('^3[RSG-WagonMaker] Recovered wagonId from Decorator: ' .. decorId .. '^7')
             wagonId = decorId
-            MyWagonId = decorId -- Update local global too
+            MyWagonId = decorId
         end
     end
     
     if not MyWagon or not DoesEntityExist(MyWagon) then
         Notify('No wagon to store (try getting inside it)', 'error')
-        print('^1[RSG-WagonMaker] StoreWagon Failed: MyWagon not exist/found^7')
         return
     end
 
-    -- Network Debug
-    if MyWagon and DoesEntityExist(MyWagon) then
-        print('[RSG-WagonMaker] StoreWagon: IsNetworked: ' .. tostring(NetworkGetEntityIsNetworked(MyWagon)))
-    end
     
     -- Remove ox_target if enabled
     if Config.UseOxTarget then
@@ -583,8 +571,6 @@ function StoreWagon(wagonId)
         MyWagonBlip = nil
     end
     
-    -- Delete entity
-    print('^3[RSG-WagonMaker] Attempting to delete wagon...^7')
     
     -- Request control first (crucial after restart)
     local netId = NetworkGetNetworkIdFromEntity(MyWagon)
@@ -613,14 +599,7 @@ function StoreWagon(wagonId)
     
     -- Fallback deletion check
     if DoesEntityExist(MyWagon) then
-        print('^3[RSG-WagonMaker] DeleteEntity failed, trying DeleteVehicle...^7')
         DeleteVehicle(MyWagon)
-    end
-    
-    if DoesEntityExist(MyWagon) then
-         print('^1[RSG-WagonMaker] Wagon STILL exists after deletion attempts!^7')
-    else
-         print('^2[RSG-WagonMaker] Wagon deleted successfully.^7')
     end
     
     MyWagon = nil

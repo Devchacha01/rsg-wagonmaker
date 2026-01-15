@@ -4,7 +4,7 @@
 -- ========================================
 
 local RSGCore = exports['rsg-core']:GetCoreObject()
-print('^2[RSG-WagonMaker]^7 crafting.lua loaded successfully!')
+
 
 local InCraftingZone = false
 local CurrentCraftingZone = nil
@@ -154,11 +154,6 @@ function OpenCraftingMenu()
         })
     end
 
-    print('^3[DEBUG] OpenCraftingMenu - Job: ' .. tostring(CurrentCraftingZone.requiredJob) .. '^7')
-    if CurrentCraftingZone then
-        print('^3[DEBUG] Zone Data: ' .. json.encode(CurrentCraftingZone) .. '^7')
-    end
-
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'openOptions',
@@ -246,13 +241,10 @@ RegisterNUICallback('mainMenuSelect', function(data, cb)
     local value = data.value
     SetNuiFocus(false, false)
     
-    print('^2[RSG-WagonMaker] Menu Selection: ' .. tostring(value) .. '^7')
-
     if value == 'craft_wagon' then
         OpenWagonCatalog()
     elseif value == 'open_storage' then
         if CurrentCraftingZone and CurrentCraftingZone.requiredJob then
-            print('^2[RSG-WagonMaker] Requesting stash for: ' .. CurrentCraftingZone.requiredJob .. '^7')
             TriggerServerEvent('rsg-wagonmaker:server:openJobStash', CurrentCraftingZone.requiredJob)
         else
             Notify(GetLocale('job_required'), 'error')
@@ -273,10 +265,7 @@ end, false)
 
 
 function OpenManagementOptions()
-    -- Get balance and open custom UI
-    print('^3[WagonMaker] Requesting management balance...^7')
     lib.callback('rsg-wagonmaker:server:getFundBalance', false, function(balance)
-        print('^3[WagonMaker] Management balance received: ' .. tostring(balance) .. '^7')
         SetNuiFocus(true, true)
         local grade = RSGCore.Functions.GetPlayerData().job.grade.level
         SendNUIMessage({
@@ -284,7 +273,6 @@ function OpenManagementOptions()
             balance = balance or 0,
             grade = grade
         })
-        print('^3[WagonMaker] Sent openManagement to NUI^7')
     end)
 end
 
@@ -382,8 +370,6 @@ function OpenWagonCatalog()
     -- Ensure it sends as an array even if 1 item
     -- Lua tables are usually fine but explicit sorting helps
     table.sort(wagonList, function(a, b) return a.label < b.label end)
-    
-    print('^2[RSG-WagonMaker]^7 Opening UI with ' .. count .. ' wagons.')
     
     -- Open UI
     SetNuiFocus(true, true)
