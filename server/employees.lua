@@ -28,8 +28,19 @@ RegisterNetEvent('rsg-wagonmaker:server:hirePlayer', function(targetId, jobName)
 
     -- Permission Check: Must be Boss (Grade 3) or Manager (Grade 2) depending on config
     -- For now, enforcing Grade 3 (Owner/Boss) for Hiring
-    if Player.PlayerData.job.name ~= jobName or Player.PlayerData.job.grade.level < 3 then
-        TriggerClientEvent('ox_lib:notify', src, { type = 'error', description = 'You do not have permission to hire.' })
+    -- Permission Check: 
+    -- 1. Exact Match (local manager/boss)
+    -- 2. Global Boss Match (Config.GlobalJobName or "wagonmaker")
+    local isBoss = false
+    
+    if Player.PlayerData.job.name == jobName and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    elseif (Player.PlayerData.job.name == Config.GlobalJobName or Player.PlayerData.job.name == "wagonmaker") and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    end
+
+    if not isBoss then
+        TriggerClientEvent('ox_lib:notify', src, { type = 'error', description = 'You do not have permission to hire for this position.' })
         return
     end
 
@@ -73,7 +84,16 @@ RegisterNetEvent('rsg-wagonmaker:server:firePlayer', function(targetCitizenId, j
     if not Player then return end
 
     -- Permission: Boss Only
-    if Player.PlayerData.job.name ~= jobName or Player.PlayerData.job.grade.level < 3 then
+    -- Permission: Boss Only
+    local isBoss = false
+    
+    if Player.PlayerData.job.name == jobName and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    elseif (Player.PlayerData.job.name == Config.GlobalJobName or Player.PlayerData.job.name == "wagonmaker") and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    end
+
+    if not isBoss then
         TriggerClientEvent('ox_lib:notify', src, { type = 'error', description = 'Only the Boss can fire employees.' })
         return
     end
@@ -111,7 +131,16 @@ RegisterNetEvent('rsg-wagonmaker:server:updateGrade', function(targetCitizenId, 
     if not Player then return end
 
     -- Permission: Boss Only
-    if Player.PlayerData.job.name ~= jobName or Player.PlayerData.job.grade.level < 3 then
+    -- Permission: Boss Only
+    local isBoss = false
+    
+    if Player.PlayerData.job.name == jobName and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    elseif (Player.PlayerData.job.name == Config.GlobalJobName or Player.PlayerData.job.name == "wagonmaker") and Player.PlayerData.job.grade.level >= 3 then
+        isBoss = true
+    end
+
+    if not isBoss then
         return
     end
     
@@ -140,7 +169,12 @@ RSGCore.Functions.CreateCallback('rsg-wagonmaker:server:getEmployees', function(
     local Player = RSGCore.Functions.GetPlayer(source)
     if not Player then cb({}) return end
 
-    if Player.PlayerData.job.name ~= jobName then cb({}) return end
+    -- Allow global boss to see employees too
+    local hasPermission = false
+    if Player.PlayerData.job.name == jobName then hasPermission = true end
+    if (Player.PlayerData.job.name == Config.GlobalJobName or Player.PlayerData.job.name == "wagonmaker") and Player.PlayerData.job.grade.level >= 3 then hasPermission = true end
+
+    if not hasPermission then cb({}) return end
 
     -- Fetch employees from `players` table based on job
     local query = 'SELECT citizenid, charinfo, job FROM players WHERE job = ?'
