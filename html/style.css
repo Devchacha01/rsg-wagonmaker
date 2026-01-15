@@ -27,29 +27,28 @@ body {
 }
 
 .wagon-container {
-    width: 1024px;
-    height: 682px;
-    background-image: url('img/shop_bg.jpg');
-    background-size: contain;
+    width: 1000px;
+    height: 900px;
+    background-image: url('img/ui_frame.jpg');
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Padding for crafting background - push down below banner */
-    /* Padding for crafting background - push down below banner */
-    padding: 270px 90px 100px 90px;
+    /* Padding to keep content inside the ornate frame border */
+    padding: 100px 110px 100px 110px;
     box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
-/* Parking mode - use new parking background */
+/* Parking mode - use same gold frame */
 .wagon-container.parking-mode {
-    width: 550px;
-    height: 780px;
-    background-image: url('img/parking_bg.jpg');
-    padding: 140px 70px 200px 70px;
+    width: 650px;
+    height: 750px;
+    background-image: url('img/ui_frame.jpg');
+    padding: 80px 80px 80px 80px;
 }
 
 .nav-tabs {
@@ -62,27 +61,29 @@ body {
 }
 
 .tab-btn {
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
+    background: rgba(196, 160, 85, 0.25);
+    border: 2px solid #8b6914;
+    border-radius: 5px;
     font-family: 'Rye', serif;
     font-size: 1.1rem;
-    font-weight: bold;
-    color: #1a0d05;
+    font-weight: 900;
+    color: #2c1b05;
     cursor: pointer;
-    padding: 8px 15px;
+    padding: 8px 16px;
     transition: all 0.2s;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .tab-btn:hover {
-    color: #000;
-    border-color: #8b5a2b;
+    background: rgba(196, 160, 85, 0.45);
+    color: #1a0f02;
+    border-color: #5c3a1b;
 }
 
 .tab-btn.active {
-    border-color: #1a0d05;
-    color: #000;
+    background: rgba(196, 160, 85, 0.6);
+    border-color: #4a2c0f;
+    color: #1a0f02;
     text-decoration: underline;
 }
 
@@ -121,30 +122,51 @@ body {
 }
 
 .wagon-card {
-    background: rgba(230, 218, 195, 0.4);
-    border: 1px solid #a88b68;
-    border-radius: 6px;
-    border-radius: 6px;
-    padding: 10px;
-    /* Slightly reduced padding */
-    display: flex;
+    background: rgba(255, 250, 240, 0.9);
+    border: 2px solid #c4a055;
+    border-radius: 8px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: all 0.2s ease;
     cursor: pointer;
-    backdrop-filter: blur(1px);
+    box-shadow: 0 2px 6px rgba(150, 120, 60, 0.25);
 }
 
 /* Parking mode card styling - horizontal layout */
+/* Parking mode card styling - horizontal layout */
 .parking-mode .wagon-card {
-    background: rgba(255, 248, 230, 0.85);
-    border: 2px solid #8b5a2b;
+    background: rgba(255, 250, 240, 0.95);
+    border: 2px solid #c4a055;
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 12px 24px;
     flex-direction: row;
-    gap: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    gap: 20px;
+    box-shadow: 0 2px 6px rgba(150, 120, 60, 0.25);
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.parking-mode .wagon-card .wagon-icon {
+    width: auto;
+    flex: 0 0 auto;
+    margin-bottom: 0;
+}
+
+.parking-mode .wagon-card .wagon-name {
+    text-align: left;
+    flex: 1;
+    font-size: 1.3rem;
+}
+
+.parking-mode .wagon-card .wagon-desc {
+    text-align: right;
+    margin-top: 0;
+    flex: 0 0 auto;
+    font-size: 1rem;
+    color: #4a3508;
+    max-width: 40%;
 }
 
 .wagon-materials {
@@ -163,32 +185,32 @@ body {
 
 .wagon-materials span {
     background: rgba(92, 58, 27, 0.2);
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 4px;
-    border: 1px solid #8b5a2b;
+    border: 1px solid #5c3a1b;
+    color: #2c1b05;
+    font-weight: 900;
 }
 
 .option-title {
     grid-column: 1 / -1;
     font-family: 'Rye', serif;
-    font-size: 1.3rem;
-    color: #3e2712;
+    font-size: 1.4rem;
+    color: #8b6914;
     text-align: center;
-    padding: 8px 0;
-    border-bottom: 2px solid #a88b68;
-    margin-bottom: 25px;
-    /* Increase spacing below header */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    border-bottom: 2px solid #c4a055;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 /* Parking mode title adjustment */
 .parking-mode .option-title {
-    margin-top: 70px;
-    /* Push below the 'Wagon Parking' banner */
-    margin-bottom: 20px;
-    border-bottom: 2px solid #5c3a1b;
-    color: #2a1a0a;
-    font-size: 1.4rem;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #c4a055;
+    color: #8b6914;
+    font-size: 1.5rem;
     font-weight: bold;
 }
 
@@ -201,21 +223,22 @@ body {
 }
 
 .parking-mode .single-col .wagon-card {
-    width: 80%;
-    justify-content: center;
-    text-align: center;
+    width: 90%;
+    /* Override centered alignment from single-col specific rule if needed */
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .wagon-card:hover {
     background: rgba(255, 253, 230, 1);
     transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    border-color: #4a2c0f;
+    box-shadow: 0 4px 12px rgba(60, 40, 10, 0.35);
+    border-color: #5c3a1b;
 }
 
 .wagon-icon {
     font-size: 2rem;
-    color: #5c3a1b;
+    color: #4a3508;
     margin-bottom: 10px;
     display: flex;
     justify-content: center;
@@ -224,18 +247,21 @@ body {
 }
 
 .wagon-icon i {
-    font-size: 2rem;
-    color: #5c3a1b;
+    font-size: 2.2rem;
+    color: #4a3508;
+    text-shadow: 1px 1px 0px rgba(255, 215, 0, 0.2);
 }
 
 .wagon-name {
     font-family: 'Rye', serif;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #1a0d05;
-    margin-bottom: 0;
-    text-align: left;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #2c1b05;
+    margin-bottom: 5px;
+    text-align: center;
+    width: 100%;
     flex: 1;
+    text-shadow: 1px 1px 1px rgba(184, 134, 11, 0.2);
 }
 
 .wagon-price {
@@ -247,11 +273,12 @@ body {
 
 .wagon-desc {
     font-family: 'Roboto', sans-serif;
-    font-size: 0.95rem;
-    color: #2a1a0a;
+    font-size: 1.05rem;
+    color: #4a3508;
     text-align: center;
     margin-top: 5px;
     font-style: italic;
+    font-weight: 600;
 }
 
 .footer {
@@ -301,19 +328,43 @@ body {
 
 /* Management Menu Specifics */
 .balance-card {
-    background: rgba(46, 139, 87, 0.1);
+    background: rgba(46, 139, 87, 0.15);
     /* Subtle green tint background */
     border: 2px solid #2e8b57;
     /* Green border to emphasize money */
     grid-column: 1 / -1;
     /* Header style - full width */
-    margin-bottom: 5px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     /* Horizontal layout */
-    justify-content: center;
-    gap: 15px;
+    justify-content: space-between;
+    padding: 15px 40px;
+    gap: 20px;
     align-items: center;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.balance-card .wagon-icon {
+    width: auto;
+    margin-bottom: 0;
+    font-size: 2.5rem;
+}
+
+.balance-card .wagon-name {
+    text-align: right;
+    font-size: 1.4rem;
+    flex: unset;
+    width: auto;
+}
+
+.balance-card .wagon-desc {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #1a4010;
+    margin-top: 0;
 }
 
 .balance-card .wagon-desc {
