@@ -837,6 +837,17 @@ RegisterNetEvent('rsg-wagonmaker:client:transferAccepted', function()
     Notify(GetLocale('transfer_accepted'), 'success')
 end)
 
+RegisterNetEvent('rsg-wagonmaker:client:transferComplete', function()
+    -- refresh menu if open
+    local parkingNPC = GetClosestParkingNPC()
+    if parkingNPC then
+        -- Close current and reopen to refresh list
+        SetNuiFocus(false, false)
+        Wait(100)
+        OpenParkingMenu(parkingNPC)
+    end
+end)
+
 RegisterNetEvent('rsg-wagonmaker:client:transferDeclined', function()
     Notify(GetLocale('transfer_declined'), 'inform')
 end)

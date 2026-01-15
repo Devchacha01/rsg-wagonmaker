@@ -258,6 +258,8 @@ RegisterNetEvent('rsg-wagonmaker:server:respondTransfer', function(transferId, a
                 description = 'Your wagon transfer was accepted',
                 type = 'success'
             })
+            -- Force UI refresh for sender
+            TriggerClientEvent('rsg-wagonmaker:client:transferComplete', SenderPlayer.PlayerData.source)
         end
         
         if Config.Debug then
