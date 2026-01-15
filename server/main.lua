@@ -171,12 +171,12 @@ RegisterNetEvent('rsg-wagonmaker:server:openJobStash', function(jobName)
 
     -- Use ox_inventory for stash
     if GetResourceState('ox_inventory') == 'started' then
-        exports.ox_inventory:RegisterStash(stashId, stashLabel, 50, 400000)
+        exports.ox_inventory:RegisterStash(stashId, stashLabel, 50, 4000000)
         TriggerClientEvent('ox_inventory:openInventory', src, 'stash', stashId)
     else
         -- Fallback to RSG inventory
         exports['rsg-inventory']:OpenInventory(src, stashId, {
-            maxweight = 400000,
+            maxweight = 4000000,
             slots = 50,
             label = stashLabel
         })
@@ -189,7 +189,7 @@ RegisterNetEvent('rsg-wagonmaker:server:openWagonStash', function(stashId, data)
     
     if not stashId then return end
     
-    local weight = data.maxweight or 500000
+    local weight = data.maxweight or 50000000
     local slots = data.slots or 50
     local label = data.label or 'Wagon Stash'
     

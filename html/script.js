@@ -402,6 +402,15 @@ function openOptions(title, options, callbackName, layout) {
         name.innerText = opt.label;
 
         card.appendChild(name);
+
+        // Add description if present (for parking menu wagon info)
+        if (opt.description) {
+            const desc = document.createElement('div');
+            desc.className = 'wagon-desc';
+            desc.innerText = opt.description.replace(/\\n/g, ' - ');
+            card.appendChild(desc);
+        }
+
         optionList.appendChild(card);
     });
 

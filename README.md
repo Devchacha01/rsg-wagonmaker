@@ -1,6 +1,8 @@
 # 🐴 RSG Wagon Maker
 **Advanced Wagon Crafting, Parking, and Employee Management System for RedM (RSGCore)**
 
+![Wagon Maker Workshop](wagonmaker_banner.jpg)
+
 `rsg-wagonmaker` is a feature-rich resource that enables players to own and manage their own Wagon Making business. It includes a complete crafting system, a persistent parking system with "Ghost Wagon" protection, and a full employee management system (Hire/Fire/Promote) integrated directly into the UI.
 
 ---
@@ -107,12 +109,31 @@ cart01 = {
         { item = "wood_log", amount = 8 },
         { item = "iron_parts", amount = 4 },
     },
-    price = 25,                         -- Production cost (optional)
     model = "cart01",                   -- Spawn Model Name
-    maxWeight = 50000,                  -- Stash Weight (grams)
-    slots = 15,                         -- Stash Slots
+    maxWeight = 150000,                 -- Stash Weight (grams) = 150kg
+    slots = 60,                         -- Stash Slots
 }
 ```
+
+### 📦 Wagon Storage & Slots Guide
+
+Each wagon has its own inventory stash with `maxWeight` (in grams) and `slots`:
+
+| Wagon Category | Weight Range | Slots | Description |
+|----------------|--------------|-------|-------------|
+| **Carts** | 150-220kg | 60 | Small carts for light loads |
+| **Buggies** | 200-300kg | 60 | Personal transport with limited storage |
+| **Coaches** | 350-480kg | 60-80 | Passenger carriages with moderate storage |
+| **Work Wagons** | 300-800kg | 60-150 | Heavy-duty freight and supply wagons |
+| **Stagecoaches** | 450-700kg | 60-120 | Long-distance transport wagons |
+| **Special/Military** | 550-1000kg | 60-120 | Armored and combat wagons |
+| **Specialty Commercial** | 320-420kg | 30-60 | Circus, dairy, delivery wagons |
+
+**Notes:**
+- `maxWeight` is in **grams** (150000 = 150kg)
+- Larger wagons require more materials to craft
+- Some special wagons require higher employee grades (`requiredGrade`)
+- All wagons have `price = 0` - players craft using materials only
 
 ### 2. Job & Location Setup
 You can control whether players need a specific job for each town's wagon workshop.
