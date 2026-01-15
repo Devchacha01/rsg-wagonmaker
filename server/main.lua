@@ -13,69 +13,8 @@ local ZoneCache = {}
 
 CreateThread(function()
     -- Ensure tables exist
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `wagonmaker_zones` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `type` ENUM('crafting', 'preview') NOT NULL,
-            `x` FLOAT NOT NULL,
-            `y` FLOAT NOT NULL,
-            `z` FLOAT NOT NULL,
-            `radius` FLOAT DEFAULT 2.0,
-            `created_by` VARCHAR(50) NULL,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX `idx_type` (`type`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ]])
-    
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `wagonmaker_wagons` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `citizenid` VARCHAR(50) NOT NULL,
-            `model` VARCHAR(50) NOT NULL,
-            `name` VARCHAR(100) NOT NULL,
-            `livery` INT DEFAULT -1,
-            `tint` INT DEFAULT 0,
-            `props` VARCHAR(100) DEFAULT NULL,
-            `lantern` VARCHAR(100) DEFAULT NULL,
-            `extra` INT DEFAULT 0,
-            `parking_location` INT DEFAULT 1,
-            `spawned` TINYINT(1) DEFAULT 0,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX `idx_citizenid` (`citizenid`),
-            INDEX `idx_spawned` (`spawned`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ]])
-    
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `wagonmaker_transfers` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `wagon_id` INT NOT NULL,
-            `from_citizenid` VARCHAR(50) NOT NULL,
-            `to_citizenid` VARCHAR(50) NOT NULL,
-            `price` INT DEFAULT 0,
-            `status` ENUM('pending', 'accepted', 'declined', 'cancelled') DEFAULT 'pending',
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX `idx_wagon_id` (`wagon_id`),
-            INDEX `idx_to_citizenid` (`to_citizenid`),
-            INDEX `idx_status` (`status`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ]])
-    
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `wagonmaker_logs` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `citizenid` VARCHAR(50) NOT NULL,
-            `action` VARCHAR(50) NOT NULL,
-            `wagon_model` VARCHAR(50) NULL,
-            `wagon_id` INT NULL,
-            `details` TEXT NULL,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX `idx_citizenid` (`citizenid`),
-            INDEX `idx_action` (`action`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ]])
-    
+    -- Tables are handled by sql/wagonmaker.sql
+    -- Ensuring management_funds exists if not created by SQL
     MySQL.query.await([[
         CREATE TABLE IF NOT EXISTS `management_funds` (
             `job_name` VARCHAR(50) NOT NULL,

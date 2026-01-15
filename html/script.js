@@ -11,7 +11,7 @@ window.addEventListener('message', function (event) {
         // Used for Livery/Tint selection
         openOptions(data.title, data.options, data.callbackName, data.layout);
     } else if (data.action === 'openManagement') {
-        openManagement(data.balance);
+        openManagement(data.balance, data.grade);
     }
 });
 
@@ -78,25 +78,36 @@ function openMenu(wagons) {
     } catch (e) { }
 }
 
-function openManagement(balance) {
+function openManagement(balance, grade) {
     const app = document.getElementById('app');
     const wagonList = document.getElementById('wagon-list');
     const optionList = document.getElementById('option-list');
     const tabs = document.getElementById('category-tabs');
     const managementMenu = document.getElementById('management-menu');
     const balanceEl = document.getElementById('management-balance');
+    const jobMgmtBtn = document.getElementById('btn-job-mgmt');
 
     if (!app || !managementMenu) return;
+
+    // Force visibility FIRST to ensure menu opens
+    app.style.display = 'flex';
+    managementMenu.style.display = 'grid';
 
     // Hide standard shop elements
     if (wagonList) wagonList.style.display = 'none';
     if (optionList) optionList.style.display = 'none';
     if (tabs) tabs.style.display = 'none';
 
-    // Show management menu
-    managementMenu.style.display = 'grid';
+    // Toggle Boss Menu based on Grade
+    if (jobMgmtBtn) {
+        if (grade >= 3) {
+            jobMgmtBtn.style.display = 'flex'; // or 'block' depending on flex needs, usually flex for cards
+        } else {
+            jobMgmtBtn.style.display = 'none';
+        }
+    }
 
-    // Update balance safely
+    // Update balance
     if (balanceEl) {
         try {
             const numBalance = Number(balance);
@@ -106,9 +117,6 @@ function openManagement(balance) {
             balanceEl.innerText = '$0.00';
         }
     }
-
-    // Ensure app is visible
-    app.style.display = 'flex';
 }
 
 function triggerManagement(action) {
@@ -127,7 +135,7 @@ function triggerManagement(action) {
     }
 }
 
-function openManagement() {
+function backToManagement() {
     // Return to main management menu
     document.getElementById('employee-menu').style.display = 'none';
     document.getElementById('management-menu').style.display = 'grid';
@@ -379,6 +387,15 @@ function openOptions(title, options, callbackName, layout) {
         const card = document.createElement('div');
         card.className = 'wagon-card'; // Reuse same visual style
         card.onclick = () => selectOption(callbackName, opt.value);
+
+        if (opt.icon) {
+            const icon = document.createElement('div');
+            icon.className = 'wagon-icon';
+            // Support both shorthand ('box') and full class ('fas fa-box')
+            const iconClass = opt.icon.startsWith('fa') ? opt.icon : `fas fa-${opt.icon}`;
+            icon.innerHTML = `<i class="${iconClass}"></i>`;
+            card.appendChild(icon);
+        }
 
         const name = document.createElement('div');
         name.className = 'wagon-name';

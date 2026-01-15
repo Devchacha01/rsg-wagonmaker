@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `wagon_maker_wagons` (
+CREATE TABLE IF NOT EXISTS `wagonmaker_wagons` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `citizenid` varchar(50) DEFAULT NULL,
   `model` varchar(50) DEFAULT NULL,
@@ -10,27 +10,25 @@ CREATE TABLE IF NOT EXISTS `wagon_maker_wagons` (
   `tint` int(11) DEFAULT 0,
   `lantern` varchar(50) DEFAULT NULL,
   `extra` int(11) DEFAULT 0,
-  `damage` text DEFAULT NULL,
-  `inventory` longtext DEFAULT NULL,
-  `metadata` longtext DEFAULT NULL,
+  `parking_location` int(11) DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `idx_citizenid` (`citizenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `wagon_maker_zones` (
+CREATE TABLE IF NOT EXISTS `wagonmaker_zones` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(20) DEFAULT 'crafting',
-  `owner` varchar(50) DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
   `x` float DEFAULT 0,
   `y` float DEFAULT 0,
   `z` float DEFAULT 0,
   `radius` float DEFAULT 2.0,
-  `allowed_jobs` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `wagon_maker_transfers` (
+CREATE TABLE IF NOT EXISTS `wagonmaker_transfers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wagon_id` int(11) NOT NULL,
   `from_citizenid` varchar(50) NOT NULL,
@@ -41,14 +39,21 @@ CREATE TABLE IF NOT EXISTS `wagon_maker_transfers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- New table for Employee Stats (similar to rsg-saloon)
-CREATE TABLE IF NOT EXISTS `wagon_maker_employees` (
+CREATE TABLE IF NOT EXISTS `wagonmaker_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `job_name` varchar(50) NOT NULL,
   `citizenid` varchar(50) NOT NULL,
-  `player_name` varchar(100) DEFAULT NULL,
-  `items_crafted` int(11) DEFAULT 0,
-  `hired_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_employee` (`job_name`, `citizenid`)
+  `action` varchar(50) NOT NULL,
+  `wagon_model` varchar(50) NULL,
+  `wagon_id` int(11) NULL,
+  `details` text NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Management Funds (Required for Boss Menu)
+CREATE TABLE IF NOT EXISTS `management_funds` (
+  `job_name` varchar(50) NOT NULL,
+  `amount` int(11) DEFAULT 0,
+  `type` varchar(50) DEFAULT 'boss',
+  PRIMARY KEY (`job_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

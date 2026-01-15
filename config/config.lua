@@ -105,7 +105,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard",
+            name = "Wagon Maker - Valentine",
             scale = 0.8
         }
     },
@@ -125,7 +125,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Rhodes",
+            name = "Wagon Maker - Rhodes",
             scale = 0.8
         }
     },
@@ -145,7 +145,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Saint Denis",
+            name = "Wagon Maker - Saint Denis",
             scale = 0.8
         }
     },
@@ -165,7 +165,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Blackwater",
+            name = "Wagon Maker - Blackwater",
             scale = 0.8
         }
     },
@@ -185,7 +185,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Strawberry",
+            name = "Wagon Maker - Strawberry",
             scale = 0.8
         }
     },
@@ -205,7 +205,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Armadillo",
+            name = "Wagon Maker - Armadillo",
             scale = 0.8
         }
     },
@@ -225,7 +225,7 @@ Config.ParkingNPCs = {
         blip = {
             enabled = true,
             sprite = 1012165077,
-            name = "Wagon Yard - Tumbleweed",
+            name = "Wagon Maker - Tumbleweed",
             scale = 0.8
         }
     }
@@ -430,8 +430,8 @@ Config.Wagons = {
             { item = "nails", amount = 10 }
         },
         price = 25,
-        maxWeight = 50000,
-        slots = 15,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -450,8 +450,8 @@ Config.Wagons = {
             { item = "nails", amount = 15 }
         },
         price = 30,
-        maxWeight = 60000,
-        slots = 18,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -470,8 +470,8 @@ Config.Wagons = {
             { item = "nails", amount = 8 }
         },
         price = 22,
-        maxWeight = 40000,
-        slots = 12,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -490,8 +490,8 @@ Config.Wagons = {
             { item = "nails", amount = 12 }
         },
         price = 28,
-        maxWeight = 55000,
-        slots = 16,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -511,8 +511,8 @@ Config.Wagons = {
             { item = "nails", amount = 20 }
         },
         price = 70,
-        maxWeight = 80000,
-        slots = 8,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1 },
             tint = { 0, 1, 2, 3, 4, 5 },
@@ -531,8 +531,8 @@ Config.Wagons = {
             { item = "nails", amount = 25 }
         },
         price = 60,
-        maxWeight = 100000,
-        slots = 25,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
@@ -551,8 +551,8 @@ Config.Wagons = {
             { item = "nails", amount = 14 }
         },
         price = 32,
-        maxWeight = 65000,
-        slots = 18,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2 },
             tint = { 0, 1, 2, 3, 4, 5, 6 },
@@ -571,8 +571,8 @@ Config.Wagons = {
             { item = "nails", amount = 18 }
         },
         price = 38,
-        maxWeight = 75000,
-        slots = 20,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -597,8 +597,8 @@ Config.Wagons = {
             { item = "rope", amount = 4 }
         },
         price = 40,
-        maxWeight = 150000,
-        slots = 30,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -620,8 +620,8 @@ Config.Wagons = {
             { item = "rope", amount = 6 }
         },
         price = 50,
-        maxWeight = 200000,
-        slots = 35,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -640,8 +640,8 @@ Config.Wagons = {
             { item = "nails", amount = 18 }
         },
         price = 35,
-        maxWeight = 120000,
-        slots = 25,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -660,8 +660,8 @@ Config.Wagons = {
             { item = "nails", amount = 20 }
         },
         price = 45,
-        maxWeight = 180000,
-        slots = 32,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
@@ -681,8 +681,8 @@ Config.Wagons = {
             { item = "nails", amount = 22 }
         },
         price = 55,
-        maxWeight = 220000,
-        slots = 38,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -703,8 +703,8 @@ Config.Wagons = {
             { item = "nails", amount = 30 }
         },
         price = 80,
-        maxWeight = 860,
-        slots = 75,
+        maxWeight = 4000000,
+        slots = 100,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -724,8 +724,8 @@ Config.Wagons = {
             { item = "nails", amount = 28 }
         },
         price = 65,
-        maxWeight = 815,
-        slots = 70,
+        maxWeight = 4000000,
+        slots = 100,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -747,8 +747,8 @@ Config.Wagons = {
             { item = "rope", amount = 10 }
         },
         price = 130,
-        maxWeight = 1700,
-        slots = 100,
+        maxWeight = 4000000,
+        slots = 120,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -767,8 +767,8 @@ Config.Wagons = {
             { item = "nails", amount = 15 }
         },
         price = 30,
-        maxWeight = 450,
-        slots = 40,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -789,8 +789,8 @@ Config.Wagons = {
             { item = "rope", amount = 15 }
         },
         price = 120,
-        maxWeight = 1580,
-        slots = 80,
+        maxWeight = 4000000,
+        slots = 150,
         requiredGrade = 2,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
@@ -811,8 +811,8 @@ Config.Wagons = {
             { item = "nails", amount = 25 }
         },
         price = 85,
-        maxWeight = 860,
-        slots = 8,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1 },
             tint = { 0, 1, 2, 3, 4, 5 },
@@ -832,8 +832,8 @@ Config.Wagons = {
             { item = "nails", amount = 35 }
         },
         price = 110,
-        maxWeight = 1250,
-        slots = 12,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1 },
             tint = { 0, 1, 2, 3, 4, 5, 6 },
@@ -853,8 +853,8 @@ Config.Wagons = {
             { item = "nails", amount = 60 }
         },
         price = 100,
-        maxWeight = 1360,
-        slots = 30,
+        maxWeight = 4000000,
+        slots = 100,
         customizations = {
             livery = { -1, 0, 1 },
             tint = { 0, 1, 2, 3, 4, 5 },
@@ -880,8 +880,8 @@ Config.Wagons = {
             { item = "paint", amount = 5 }
         },
         price = 250,
-        maxWeight = 350,
-        slots = 8,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -902,8 +902,8 @@ Config.Wagons = {
             { item = "paint", amount = 4 }
         },
         price = 220,
-        maxWeight = 400,
-        slots = 10,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -924,8 +924,8 @@ Config.Wagons = {
             { item = "paint", amount = 6 }
         },
         price = 350,
-        maxWeight = 450,
-        slots = 12,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -946,8 +946,8 @@ Config.Wagons = {
             { item = "paint", amount = 5 }
         },
         price = 300,
-        maxWeight = 300,
-        slots = 6,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -968,8 +968,8 @@ Config.Wagons = {
             { item = "paint", amount = 4 }
         },
         price = 320,
-        maxWeight = 600,
-        slots = 18,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -990,8 +990,8 @@ Config.Wagons = {
             { item = "paint", amount = 3 }
         },
         price = 150,
-        maxWeight = 250,
-        slots = 5,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1011,8 +1011,8 @@ Config.Wagons = {
             { item = "nails", amount = 15 }
         },
         price = 80,
-        maxWeight = 200,
-        slots = 4,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1032,8 +1032,8 @@ Config.Wagons = {
             { item = "nails", amount = 22 }
         },
         price = 120,
-        maxWeight = 350,
-        slots = 8,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1059,8 +1059,8 @@ Config.Wagons = {
             { item = "paint", amount = 8 }
         },
         price = 450,
-        maxWeight = 700,
-        slots = 20,
+        maxWeight = 4000000,
+        slots = 100,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6, 7 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1082,8 +1082,8 @@ Config.Wagons = {
             { item = "paint", amount = 6 }
         },
         price = 380,
-        maxWeight = 500,
-        slots = 15,
+        maxWeight = 4000000,
+        slots = 80,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1104,8 +1104,8 @@ Config.Wagons = {
             { item = "paint", amount = 4 }
         },
         price = 200,
-        maxWeight = 400,
-        slots = 10,
+        maxWeight = 4000000,
+        slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1127,8 +1127,8 @@ Config.Wagons = {
             { item = "paint", amount = 10 }
         },
         price = 500,
-        maxWeight = 750,
-        slots = 22,
+        maxWeight = 4000000,
+        slots = 110,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6, 7 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1150,8 +1150,8 @@ Config.Wagons = {
             { item = "paint", amount = 7 }
         },
         price = 400,
-        maxWeight = 1000,
-        slots = 25,
+        maxWeight = 4000000,
+        slots = 120,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6 },
             tint = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
@@ -1176,8 +1176,8 @@ Config.Wagons = {
             { item = "nails", amount = 80 }
         },
         price = 700,
-        maxWeight = 500,
-        slots = 10,
+        maxWeight = 4000000,
+        slots = 60,
         requiredGrade = 3,
         customizations = {
             livery = { -1, 0, 1, 2 },
@@ -1200,8 +1200,8 @@ Config.Wagons = {
             { item = "paint", amount = 8 }
         },
         price = 500,
-        maxWeight = 900,
-        slots = 22,
+        maxWeight = 4000000,
+        slots = 120,
         requiredGrade = 2,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
@@ -1224,8 +1224,8 @@ Config.Wagons = {
             { item = "paint", amount = 10 }
         },
         price = 600,
-        maxWeight = 800,
-        slots = 25,
+        maxWeight = 4000000,
+        slots = 120,
         requiredGrade = 3,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
@@ -1248,8 +1248,8 @@ Config.Wagons = {
             { item = "paint", amount = 5 }
         },
         price = 180,
-        maxWeight = 700,
-        slots = 15,
+        maxWeight = 4000000,
+        slots = 100,
         requiredGrade = 2,
         customizations = {
             livery = { -1, 0, 1, 2 },
@@ -1270,8 +1270,8 @@ Config.Wagons = {
             { item = "nails", amount = 70 }
         },
         price = 200,
-        maxWeight = 750,
-        slots = 10,
+        maxWeight = 4000000,
+        slots = 100,
         requiredGrade = 2,
         customizations = {
             livery = { -1, 0, 1 },
@@ -1293,8 +1293,8 @@ Config.Wagons = {
             { item = "nails", amount = 100 }
         },
         price = 350,
-        maxWeight = 450,
-        slots = 10,
+        maxWeight = 4000000,
+        slots = 60,
         requiredGrade = 3,
         customizations = {
             livery = { -1, 0, 1 },
@@ -1315,8 +1315,8 @@ Config.Wagons = {
             { item = "nails", amount = 120 }
         },
         price = 1000,
-        maxWeight = 600,
-        slots = 8,
+        maxWeight = 4000000,
+        slots = 80,
         requiredGrade = 3,
         customizations = {
             livery = { -1, 0, 1 },
@@ -1342,7 +1342,7 @@ Config.Wagons = {
             { item = "paint", amount = 15 }
         },
         price = 120,
-        maxWeight = 800,
+        maxWeight = 4000000,
         slots = 40,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 },
@@ -1364,7 +1364,7 @@ Config.Wagons = {
             { item = "paint", amount = 12 }
         },
         price = 100,
-        maxWeight = 600,
+        maxWeight = 4000000,
         slots = 30,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5, 6, 7 },
@@ -1385,7 +1385,7 @@ Config.Wagons = {
             { item = "paint", amount = 3 }
         },
         price = 70,
-        maxWeight = 400,
+        maxWeight = 4000000,
         slots = 50,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },
@@ -1407,7 +1407,7 @@ Config.Wagons = {
             { item = "paint", amount = 5 }
         },
         price = 90,
-        maxWeight = 300,
+        maxWeight = 4000000,
         slots = 45,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4 },
@@ -1429,7 +1429,7 @@ Config.Wagons = {
             { item = "paint", amount = 4 }
         },
         price = 110,
-        maxWeight = 500,
+        maxWeight = 4000000,
         slots = 60,
         customizations = {
             livery = { -1, 0, 1, 2, 3, 4, 5 },
@@ -1450,7 +1450,7 @@ Config.Wagons = {
             { item = "paint", amount = 3 }
         },
         price = 75,
-        maxWeight = 450,
+        maxWeight = 4000000,
         slots = 55,
         customizations = {
             livery = { -1, 0, 1, 2, 3 },

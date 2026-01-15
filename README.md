@@ -10,7 +10,6 @@
 ### 🛠️ Crafting System
 - **Immersive UI**: Vintage-styled crafting menu with recipe lists and dynamic material requirements.
 - **Visuals**: Crafting preview shows the wagon spinning before you build it.
-- **Animations**: Realistic hammering animations (`WORLD_HUMAN_WAGON_HUB_MEND`) synchronized with progress bars.
 - **Customization**: Wagons can have specialized tints, liveries, and extras applied automatically upon spawning.
 
 ### 🅿️ Advanced Parking System
@@ -23,6 +22,22 @@
 - **Roster Management**: View all employees, their grades, and their stats.
 - **Promote/Fire**: Manage your workforce with simple UI buttons.
 - **Strict Job Locations**: Supports location-based jobs (e.g., a "Blackwater Wagon Maker" cannot access the "Valentine" management menu).
+
+### 📍 Pre-Configured Locations
+The resource comes pre-setup with 7 distinct Wagon Maker workshops across the map, each capable of having its own dedicated "boss" and employees:
+1.  **Valentine** (`wagon_valentine`)
+2.  **Rhodes** (`wagon_rhodes`)
+3.  **Saint Denis** (`wagon_saint`)
+4.  **Blackwater** (`wagon_blackwater`)
+5.  **Strawberry** (`wagon_strawberry`)
+6.  **Armadillo** (`wagon_armadillo`)
+7.  **Tumbleweed** (`wagon_tumbleweed`)
+
+### 🎭 Roleplay Value
+Unlike default scripts where players simply buy wagons from a generic NPC, `rsg-wagonmaker` creates a dedicated **profession**:
+-   **Player-Driven Economy**: Wagons don't just appear; they must be *built*. This creates demand for raw materials (wood, iron, leather), fueling jobs for lumberjacks, miners, and hunters.
+-   **No "Magical" Spawning**: Players have to actually craft the item, adding weight and value to the ownership of a wagon.
+-   **Job Creation**: Instead of a server command giving a wagon, players must visit a Wagon Maker player, negotiate a price, and wait for their order, fostering interaction.
 
 ---
 

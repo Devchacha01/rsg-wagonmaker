@@ -278,9 +278,11 @@ function OpenManagementOptions()
     lib.callback('rsg-wagonmaker:server:getFundBalance', false, function(balance)
         print('^3[WagonMaker] Management balance received: ' .. tostring(balance) .. '^7')
         SetNuiFocus(true, true)
+        local grade = RSGCore.Functions.GetPlayerData().job.grade.level
         SendNUIMessage({
             action = 'openManagement',
-            balance = balance or 0
+            balance = balance or 0,
+            grade = grade
         })
         print('^3[WagonMaker] Sent openManagement to NUI^7')
     end)

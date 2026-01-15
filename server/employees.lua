@@ -39,6 +39,13 @@ RegisterNetEvent('rsg-wagonmaker:server:hirePlayer', function(targetId, jobName)
         return
     end
 
+    -- Check Employee Limit (Max 4)
+    local count = MySQL.scalar.await('SELECT COUNT(*) FROM wagon_maker_employees WHERE job_name = ?', { jobName })
+    if count >= 4 then
+        TriggerClientEvent('ox_lib:notify', src, { type = 'error', description = 'Max employees reached (4).' })
+        return
+    end
+
     -- Default Hire Grade: 0
     local grade = 0
     
