@@ -6,8 +6,8 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
 
-local InCraftingZone = false
-local CurrentCraftingZone = nil
+InCraftingZone = false
+CurrentCraftingZone = nil
 local ActiveCraftingJob = nil  -- Stores the zone's requiredJob when crafting menu opens
 local CurrentCraftingWagon = nil  -- The wagon being crafted (preview wagon converted to crafting)
 local CurrentCraftingData = nil   -- Data about the current crafting session
@@ -37,6 +37,8 @@ CreateThread(function()
     -- Stop this thread if using ox_target (interactions handled via target)
     if Config.UseOxTarget then return end
     
+    local groupLabel = CreateVarString(10, "LITERAL_STRING", GetLocale("crafting_zone"))
+
     while true do
         local sleep = 500
         local zone, dist = GetClosestZone('crafting')
@@ -48,7 +50,6 @@ CreateThread(function()
             if IsWagonMaker(zone) then
                 -- Only run at frame-rate for prompt display
                 sleep = 0
-                local groupLabel = CreateVarString(10, "LITERAL_STRING", GetLocale("crafting_zone"))
                 PromptSetActiveGroupThisFrame(CraftingGroup, groupLabel, 0, 0, 0, 0)
                 
                 if PromptHasHoldModeCompleted(CraftingPrompt) then
@@ -81,10 +82,11 @@ function OpenCraftingMenu()
         end
     end
 
-    if not IsWagonMaker(CurrentCraftingZone) then
-        Notify(GetLocale('job_required'), 'error')
-        return
-    end
+    -- Check moved to interaction point
+    -- if not IsWagonMaker(CurrentCraftingZone) then
+    --    Notify(GetLocale('job_required'), 'error')
+    --    return
+    -- end
     
     -- Store the zone's required job for later use (persists when player moves to preview)
     ActiveCraftingJob = CurrentCraftingZone and CurrentCraftingZone.requiredJob or nil
@@ -226,12 +228,12 @@ RegisterNUICallback('selectWagon', function(data, cb)
     SetNuiFocus(false, false) -- Release focus immediately selection is made
     if not model then return end
     
-    -- Job check before previewing
-    if not IsWagonMaker(CurrentCraftingZone) then
-        Notify(GetLocale('job_required'), 'error')
-        cb('ok')
-        return
-    end
+    -- Job check redundant (checked at menu open)
+    -- if not IsWagonMaker(CurrentCraftingZone) then
+    --     Notify(GetLocale('job_required'), 'error')
+    --     cb('ok')
+    --     return
+    -- end
     
     TriggerEvent('rsg-wagonmaker:client:startPreview', model)
     cb('ok')
@@ -332,10 +334,10 @@ RegisterNUICallback('managementOption', function(data, cb)
 end)
 
 function OpenWagonCatalog()
-    if not IsWagonMaker(CurrentCraftingZone) then
-        Notify(GetLocale('job_required'), 'error')
-        return
-    end
+    -- if not IsWagonMaker(CurrentCraftingZone) then
+    --     Notify(GetLocale('job_required'), 'error')
+    --     return
+    -- end
 
     -- Prepare data for NUI
     local wagonList = {}
@@ -548,6 +550,7 @@ RegisterNetEvent('rsg-wagonmaker:client:craftFailed', function(reason)
 end)
 
 -- Delete any non-player peds within range of wagon (catches horses)
+-- Delete only HORSES within range of wagon (prevents NPC deletion)
 function DeleteNearbyHorses(wagon)
     if not wagon or not DoesEntityExist(wagon) then return end
     
@@ -561,9 +564,14 @@ function DeleteNearbyHorses(wagon)
             local pedCoords = GetEntityCoords(ped)
             local pedDist = #(wagonCoords - pedCoords)
             
-            -- Delete ANY non-player ped within 8m of the wagon
+            -- Check radius first
             if pedDist < 8.0 then
-                table.insert(pedsToDelete, ped)
+                -- CRITICAL: Check model to ensure we only delete horses!
+                -- This prevents deleting shop NPCs or other players/peds.
+                local model = GetEntityModel(ped)
+                if IsModelAHorse(model) then
+                    table.insert(pedsToDelete, ped)
+                end
             end
         end
         success, ped = FindNextPed(handle)
@@ -571,7 +579,7 @@ function DeleteNearbyHorses(wagon)
     
     EndFindPed(handle)
     
-    -- Delete collected peds
+    -- Delete collected horses
     for _, p in ipairs(pedsToDelete) do
         if DoesEntityExist(p) then
             SetEntityAsMissionEntity(p, true, true)

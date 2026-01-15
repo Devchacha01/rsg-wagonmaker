@@ -26,10 +26,9 @@ CreateThread(function()
     
     
     -- Populate Zone Cache
-    local zones = MySQL.query.await('SELECT * FROM wagonmaker_zones')
-    if zones then
-        ZoneCache = zones
-    end
+    -- Populate Zone Cache
+    -- Deprecated: Zones are now in config.lua
+    ZoneCache = {}
 
     if Config and Config.Debug then
         print('^2[RSG-WagonMaker]^7 Server initialized - Database tables verified - Cached ' .. #ZoneCache .. ' zones')
@@ -86,29 +85,12 @@ RegisterNetEvent('rsg-wagonmaker:server:addZone', function(zoneData)
     
     local citizenid = GetPlayerIdentifier(src)
     
-    local id = MySQL.insert.await(
-        'INSERT INTO wagonmaker_zones (type, x, y, z, radius, created_by) VALUES (?, ?, ?, ?, ?, ?)',
-        { zoneData.type, zoneData.x, zoneData.y, zoneData.z, zoneData.radius, citizenid }
-    )
+    -- Deprecated: Zones are manual now
+    print("^1[RSG-WagonMaker] AddZone is deprecated. Add to config.lua instead.^7")
+    TriggerClientEvent('rsg-wagonmaker:client:zoneAddedConfirm', src, false)
+    return
     
-    if id then
-        zoneData.id = id
-        
-        -- Update Cache
-        table.insert(ZoneCache, zoneData)
-        
-        -- Notify all clients
-        TriggerClientEvent('rsg-wagonmaker:client:zoneAdded', -1, zoneData)
-        TriggerClientEvent('rsg-wagonmaker:client:zoneAddedConfirm', src, true, zoneData.type)
-        
-        Log(citizenid, 'zone_add', nil, nil, json.encode(zoneData))
-        
-        if Config and Config.Debug then
-            print('^2[RSG-WagonMaker]^7 Zone added: ' .. zoneData.type .. ' at ' .. zoneData.x .. ', ' .. zoneData.y .. ', ' .. zoneData.z)
-        end
-    else
-        TriggerClientEvent('rsg-wagonmaker:client:zoneAddedConfirm', src, false)
-    end
+    -- End of function (logic deprecated)
 end)
 
 RegisterNetEvent('rsg-wagonmaker:server:removeZone', function(zoneId)

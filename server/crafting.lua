@@ -22,21 +22,31 @@ local function IsWagonMaker(source, requiredJob)
     if not Player then return false end
     
     local job = Player.PlayerData.job
+    local jobName = string.lower(tostring(job.name))
+    local reqJob = requiredJob and string.lower(tostring(requiredJob)) or "nil"
     
-    -- Check if job matches
-    if Config.JobMode == 'location' then
-        if requiredJob then
-            -- STRICT: Must match exact zone job
-            return job.name == requiredJob
-        else
-            -- No requiredJob passed - this shouldn't happen with proper client setup
-            -- Fallback to global job name
-            return job.name == Config.GlobalJobName
-        end
-    else
-        -- Single job mode - check global job
-        return job.name == (requiredJob or Config.GlobalJobName or 'wagonmaker')
+    print(string.format("[WM Debug] Job Check: PlayerJob='%s', Required='%s'", jobName, reqJob))
+    
+    -- Check strict match first
+    if requiredJob and jobName == string.lower(requiredJob) then
+        print("[WM Debug] Strict match success")
+        return true
     end
+    
+    -- Check global match
+    if jobName == string.lower(Config.GlobalJobName) then
+        print("[WM Debug] Global match success")
+        return true
+    end
+    
+    -- Check partial match (Lenient fallback)
+    if string.find(jobName, "wagonmaker") or string.find(jobName, "wagon_") then
+        print("[WM Debug] Partial match success")
+        return true
+    end
+    
+    print("[WM Debug] Job Check FAILED")
+    return false
 end
 
 local function HasMaterials(source, materials)
@@ -96,7 +106,9 @@ lib.callback.register('rsg-wagonmaker:server:canCraft', function(source, model, 
     
     -- Check job requirement (and specific location if provided)
     if not IsWagonMaker(source, requiredJob) then
-        return false, Config.Locale and Config.Locale['job_required'] or 'Authorized Job Required'
+        local pJob = Player.PlayerData.job.name
+        -- return false, Config.Locale and Config.Locale['job_required'] or 'Authorized Job Required'
+        return false, string.format("Job Mismatch! You are '%s', Zone needs '%s'", pJob, tostring(requiredJob))
     end
     
     -- Check grade requirement

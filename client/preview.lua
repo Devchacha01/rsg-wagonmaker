@@ -83,28 +83,72 @@ RegisterNetEvent('rsg-wagonmaker:client:startPreview', function(model, customiza
     -- Check job requirements for nearest preview zone or generally
     local zone, dist = GetClosestZone('preview')
     
-    if not IsWagonMaker(zone) then
-        Notify(GetLocale('job_required'), 'error')
-        return
-    end
+    -- if not IsWagonMaker(zone) then
+    --     Notify(GetLocale('job_required'), 'error')
+    --     return
+    -- end
 
     local spawnLocation = nil
     
+    -- Priority 1: Explicit Preview Zone
     if zone and dist < 50.0 then
         spawnLocation = {x = zone.x, y = zone.y, z = zone.z, h = zone.h or 0.0}
     else
-        -- Fallback: Spawn in front of player
-        local ped = PlayerPedId()
-        local fwd = GetOffsetFromEntityInWorldCoords(ped, 0.0, 5.0, 0.0)
-        local h = GetEntityHeading(ped)
-        spawnLocation = {x = fwd.x, y = fwd.y, z = fwd.z, h = h}
-        Notify('Previewing at your location.', 'inform')
+        -- Priority 2: Closest Crafting NPC (with previewPoint)
+        -- THIS IS PRIORITY now because the user provided specific coords for crafting areas
+        local craftingNPC, cDist = GetClosestCraftingNPC()
+        if craftingNPC and cDist < 50.0 and craftingNPC.previewPoint then
+             spawnLocation = {
+                 x = craftingNPC.previewPoint.x, 
+                 y = craftingNPC.previewPoint.y, 
+                 z = craftingNPC.previewPoint.z, 
+                 h = craftingNPC.previewHeading or 0.0
+             }
+        else
+            -- Priority 3: Nearest Parking Spawn Point (Garage)
+            -- Only use if no specific crafting preview point exists
+            local parkingNPC, pDist = GetClosestParkingNPC()
+            if parkingNPC and pDist < 50.0 then
+                 -- Use the parking spawn point
+                 spawnLocation = {
+                     x = parkingNPC.spawnPoint.x, 
+                     y = parkingNPC.spawnPoint.y, 
+                     z = parkingNPC.spawnPoint.z, 
+                     h = parkingNPC.spawnHeading or 0.0
+                 }
+            else
+                -- Priority 4: Fallback (In front of player)
+                local ped = PlayerPedId()
+                local fwd = GetOffsetFromEntityInWorldCoords(ped, 0.0, 5.0, 0.0)
+                local h = GetEntityHeading(ped)
+                spawnLocation = {x = fwd.x, y = fwd.y, z = fwd.z, h = h}
+                Notify('Previewing at your location (No designated spot found).', 'inform')
+            end
+        end
     end
     
     PreviewModel = model
     PreviewCustomization = customization or { livery = -1, tint = 0 }
     
     SpawnPreview(spawnLocation)
+
+    -- ADDED: Rotation Loop for Q/E
+    CreateThread(function()
+        while PreviewWagon and DoesEntityExist(PreviewWagon) do
+            Wait(0)
+            -- Q Key (Rotate Left)
+            if IsControlPressed(0, 0xDE794E3E) then 
+                local currentHeading = GetEntityHeading(PreviewWagon)
+                SetEntityHeading(PreviewWagon, currentHeading + 1.0)
+            end
+            
+            -- E Key (Rotate Right)
+            if IsControlPressed(0, 0xCEFD9220) then 
+                local currentHeading = GetEntityHeading(PreviewWagon)
+                SetEntityHeading(PreviewWagon, currentHeading - 1.0)
+            end
+        end
+    end)
 end)
 
 RegisterNetEvent('rsg-wagonmaker:client:endPreview', function()
@@ -174,8 +218,9 @@ function SpawnPreview(location)
         Wait(10)
     end
     
-    -- Spawn wagon (NOT networked - local only)
-    PreviewWagon = CreateVehicle(hash, location.x, location.y, location.z, location.h or 0.0, false, false, false, false)
+    -- Spawn wagon (Networked for visibility)
+    -- CreateVehicle(modelHash, x, y, z, heading, isNetwork, netMissionEntity, p7, p8)
+    PreviewWagon = CreateVehicle(hash, location.x, location.y, location.z, location.h or 0.0, true, true, false, false)
     
     -- Set as mission entity so it doesn't despawn
     SetEntityAsMissionEntity(PreviewWagon, true, true)
@@ -207,8 +252,13 @@ function SpawnPreview(location)
                         local pedCoords = GetEntityCoords(ped)
                         local dist = #(wagonCoords - pedCoords)
                         
-                        -- If attached OR very close (draft horse range)
-                        if IsEntityAttachedToEntity(ped, PreviewWagon) or dist < 6.0 then
+                        -- CRITICAL: Logic to remove draft horses
+                        -- 1. If it is physically attached to the wagon, it is a draft horse. DELETE IT.
+                        if IsEntityAttachedToEntity(ped, PreviewWagon) then
+                            DeleteEntity(ped)
+                        
+                        -- 2. If it is very close and looks like a horse, delete it (catch loose draft horses)
+                        elseif dist < 15.0 and IsModelAHorse(GetEntityModel(ped)) then
                             DeleteEntity(ped)
                         end
                     end
@@ -274,6 +324,29 @@ function SpawnPreview(location)
     
     -- Start timeout
     StartPreviewTimeout()
+end
+
+
+
+-- Helper: Check if model is a horse (Comparing Hashes Directly)
+function IsModelAHorse(model)
+    -- Wagons typically only spawn with Draft horses (Shire, Belgian, Suffolk Punch)
+    local horseModels = {
+        `a_c_horse_shire_darkbay`, 
+        `a_c_horse_shire_lightgrey`, 
+        `a_c_horse_shire_ravenblack`,
+        `a_c_horse_belgian_blondchestnut`, 
+        `a_c_horse_belgian_mealychestnut`,
+        `a_c_horse_suffolkpunch_redchestnut`, 
+        `a_c_horse_suffolkpunch_sorrel`
+    }
+    
+    for _, horseHash in ipairs(horseModels) do
+        if model == horseHash then
+            return true
+        end
+    end
+    return false
 end
 
 function OpenPreviewLiveryMenu(model)

@@ -344,3 +344,28 @@ RegisterNetEvent('rsg-wagonmaker:server:forceDeleteWagon', function(netId)
         -- print('^2[RSG-WagonMaker] Server deleted wagon entity: ' .. netId .. '^7')
     end
 end)
+RegisterNetEvent('rsg-wagonmaker:server:forceReturnWagon', function(wagonId)
+    local src = source
+    local citizenid = GetPlayerIdentifier(src)
+    
+    if not citizenid then return end
+    
+    -- Verify ownership
+    local wagon = MySQL.single.await(
+        'SELECT * FROM wagonmaker_wagons WHERE id = ? AND citizenid = ?',
+        { wagonId, citizenid }
+    )
+    
+    if not wagon then
+        TriggerClientEvent('rsg-wagonmaker:client:notify', src, 'Wagon not found or not owned', 'error')
+        return
+    end
+    
+    -- Force reset
+    MySQL.update('UPDATE wagonmaker_wagons SET spawned = 0 WHERE id = ?', { wagonId })
+    ActiveWagons[wagonId] = nil
+    
+    Log(citizenid, 'FORCE_RETURN', wagon.model, wagonId, 'Player claimed insurance')
+    
+    TriggerClientEvent('rsg-wagonmaker:client:notify', src, 'Wagon insurance claimed. It is now in the yard.', 'success')
+end)

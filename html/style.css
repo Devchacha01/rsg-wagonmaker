@@ -29,7 +29,7 @@ body {
 .wagon-container {
     width: 1000px;
     height: 900px;
-    background-image: url('img/ui_frame.jpg');
+    background-image: url('img/background.jpg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
@@ -47,7 +47,7 @@ body {
 .wagon-container.parking-mode {
     width: 650px;
     height: 750px;
-    background-image: url('img/ui_frame.jpg');
+    background-image: url('img/background.jpg');
     padding: 80px 80px 80px 80px;
 }
 

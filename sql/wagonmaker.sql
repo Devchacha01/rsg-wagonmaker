@@ -16,17 +16,9 @@ CREATE TABLE IF NOT EXISTS `wagonmaker_wagons` (
   INDEX `idx_citizenid` (`citizenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `wagonmaker_zones` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `type` varchar(20) DEFAULT 'crafting',
-  `created_by` varchar(50) DEFAULT NULL,
-  `x` float DEFAULT 0,
-  `y` float DEFAULT 0,
-  `z` float DEFAULT 0,
-  `radius` float DEFAULT 2.0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Deprecated: Zones are now configured in config.lua
+-- DROP TABLE IF EXISTS `wagonmaker_zones`;
+-- Use manual config for crafting zones
 
 CREATE TABLE IF NOT EXISTS `wagonmaker_transfers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -56,4 +48,16 @@ CREATE TABLE IF NOT EXISTS `management_funds` (
   `amount` int(11) DEFAULT 0,
   `type` varchar(50) DEFAULT 'boss',
   PRIMARY KEY (`job_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Employee Management 
+CREATE TABLE IF NOT EXISTS `wagon_maker_employees` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `job_name` varchar(50) NOT NULL,
+  `citizenid` varchar(50) NOT NULL,
+  `player_name` varchar(100) DEFAULT NULL,
+  `grade` int(11) DEFAULT 0,
+  `hired_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_employee` (`job_name`, `citizenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

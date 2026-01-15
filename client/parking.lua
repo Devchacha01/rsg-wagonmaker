@@ -125,8 +125,11 @@ end
 
 CreateThread(function()
     -- Skip this loop if using ox_target (interactions handled via target)
+    -- Skip this loop if using ox_target (interactions handled via target)
     if Config.UseOxTarget then return end
     
+    local accessingWagonStr = nil
+
     while true do
         local sleep = 500
         local npc, dist = GetClosestParkingNPC()
@@ -137,36 +140,50 @@ CreateThread(function()
             local ped = PlayerPedId()
             local inVehicle = IsPedInAnyVehicle(ped, false)
             
-            -- Fallback: Brute Force Search (Ghost Wagon Fix)
+            -- Fallback: Brute Force Search (Ghost Wagon Fix) - Optimized
+            -- Only check every 500ms, not every frame
             if not inVehicle then
-                local pCoords = GetEntityCoords(ped)
-                local vehicles = GetGamePool('CVehicle')
-                
-                for _, veh in ipairs(vehicles) do
-                    if DoesEntityExist(veh) then
-                        local vCoords = GetEntityCoords(veh)
-                        local dist = #(pCoords - vCoords)
-                        
-                        -- If any vehicle is within 10 meters, assume it's the user's wagon
-                        if dist < 10.0 then
-                            inVehicle = true
-                            break
+                if (GetGameTimer() - (lastVehicleCheck or 0)) > 500 then
+                    local pCoords = GetEntityCoords(ped)
+                    local vehicles = GetGamePool('CVehicle')
+                    isNearVehicle = false -- Reset state
+                    
+                    for _, veh in ipairs(vehicles) do
+                        if DoesEntityExist(veh) then
+                            local vCoords = GetEntityCoords(veh)
+                            local dist = #(pCoords - vCoords)
+                            
+                            -- If any vehicle is within 4 meters (reduced from 10m to prevent false positives), assume conflict
+                            if dist < 4.0 then
+                                isNearVehicle = true
+                                break
+                            end
                         end
                     end
+                    lastVehicleCheck = GetGameTimer()
+                end
+                
+                -- Use cached result
+                if isNearVehicle then
+                    inVehicle = true
                 end
             end
             
             -- Only show prompt when NOT in a vehicle (on foot)
             if not inVehicle then
                 -- Dynamic Prompt Text Update
-                local promptText = "Access Wagon Yard"
-                
-                -- Update the prompt text (Top Right)
-                local str = CreateVarString(10, "LITERAL_STRING", promptText)
-                PromptSetText(ParkingPrompt, str)
+                -- Cached prompt text
+                if not accessingWagonStr then
+                     accessingWagonStr = CreateVarString(10, "LITERAL_STRING", "Access Wagon Yard")
+                end
+                PromptSetText(ParkingPrompt, accessingWagonStr)
 
-                local groupLabel = CreateVarString(10, "LITERAL_STRING", npc.name)
-                PromptSetActiveGroupThisFrame(ParkingGroup, groupLabel, 0, 0, 0, 0)
+                -- Cache NPC name string on the npc object itself if not present
+                if not npc.nameStr then
+                    npc.nameStr = CreateVarString(10, "LITERAL_STRING", npc.name)
+                end
+                
+                PromptSetActiveGroupThisFrame(ParkingGroup, npc.nameStr, 0, 0, 0, 0)
                 
                 -- Input Check
                 local pressed = Citizen.InvokeNative(0xC92AC953F0A982AE, ParkingPrompt)
@@ -274,13 +291,24 @@ function OpenWagonOptionsMenu(wagon, parkingNPC)
     local nuiOptions = {}
     
     if isSpawned then
-        -- Wagon is currently out
-        table.insert(nuiOptions, {
-            label = GetLocale('parking_store'),
-            description = 'Store your wagon in the yard',
-            value = 'store',
-            icon = 'warehouse'
-        })
+        -- Check if the physical entity actually exists and we control it
+        if MyWagon and DoesEntityExist(MyWagon) and MyWagonId == wagon.id then
+             -- Wagon is currently out and we have it
+            table.insert(nuiOptions, {
+                label = GetLocale('parking_store'),
+                description = 'Store your wagon in the yard',
+                value = 'store',
+                icon = 'warehouse'
+            })
+        else
+            -- Wagon is 'out' in DB but we lost it (broken/despawned)
+             table.insert(nuiOptions, {
+                label = 'Force Return (Insurance)',
+                description = 'Wagon lost or broken? Claim insurance to retrieve it.',
+                value = 'force_return',
+                icon = 'ambulance'
+            })
+        end
     else
         -- Wagon is stored
         table.insert(nuiOptions, {
@@ -338,6 +366,11 @@ RegisterNUICallback('parkingWagonOptionSelect', function(data, cb)
         SpawnWagon(wagon, npc)
     elseif value == 'store' then
         StoreWagon(wagon.id)
+    elseif value == 'force_return' then
+        -- Reset status on server then spawn
+        TriggerServerEvent('rsg-wagonmaker:server:forceReturnWagon', wagon.id)
+        Wait(500) -- Small delay for DB update
+        SpawnWagon(wagon, npc)
     elseif value == 'rename' then
         RenameWagon(wagon, npc)
     elseif value == 'transfer' then

@@ -23,6 +23,7 @@ RegisterCommand('wm_addzone', function(source, args)
     end
     
     local playerCoords = GetEntityCoords(PlayerPedId())
+    local heading = GetEntityHeading(PlayerPedId())
     local radius = tonumber(args[2]) or (zoneType == 'crafting' and Config.CraftingMarker.radius or Config.PreviewMarker.radius)
     
     TriggerServerEvent('rsg-wagonmaker:server:addZone', {
@@ -30,6 +31,8 @@ RegisterCommand('wm_addzone', function(source, args)
         x = playerCoords.x,
         y = playerCoords.y,
         z = playerCoords.z,
+        heading = heading,
+        model = Config.DefaultWorkerModel,
         radius = radius
     })
 end, false)

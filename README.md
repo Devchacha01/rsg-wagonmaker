@@ -3,190 +3,163 @@
 
 ![Wagon Maker Workshop](wagonmaker_banner.jpg)
 
-`rsg-wagonmaker` is a feature-rich resource that enables players to own and manage their own Wagon Making business. It includes a complete crafting system, a persistent parking system with "Ghost Wagon" protection, and a full employee management system (Hire/Fire/Promote) integrated directly into the UI.
+`rsg-wagonmaker` is a premium, feature-rich resource that empowers players to own and operate their own Wagon Making business. It moves beyond simple "click-to-buy" mechanics by introducing a deep crafting system, interactive 3D previews, persistent parking with "Ghost Wagon" protection, and a complete employee management suite.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-### 🛠️ Crafting System
-- **Immersive UI**: Vintage-styled crafting menu with recipe lists and dynamic material requirements.
-- **Visuals**: Crafting preview shows the wagon spinning before you build it.
-- **Customization**: Wagons can have specialized tints, liveries, and extras applied automatically upon spawning.
+### 🛠️ Professional Crafting System
+- **Immersive UI**: Vintage-styled crafting menu with dynamic recipe lists and material requirements.
+- **Interactive 3D Preview**: Before crafting, effectively "test drive" the look of the wagon.
+    - **Visual Customization**: Change **Tints** and **Liveries** in real-time.
+    - **Rotation**: Use **Q / E** keys to rotate the wagon and inspect it from all angles.
+    - **Networked**: Other players can see what you are previewing!
+- **Material Economy**: Wagons require wood, iron, leather, and other resources, driving the server's economy.
 
-### 🅿️ Advanced Parking System
-- **Persistent Storage**: Wagons are saved to the database (`wagonmaker_wagons`) and persist across server restarts.
-- **Ghost Wagon Protection**: The server automatically detects if a wagon entity despawns (due to OneSync issues or crashes) and "releases" it so the player can spawn it again without admin intervention.
-- **Stash Integration**: Every wagon has a unique stash (`rsg-inventory`) accessible via Third Eye target on the wagon.
+### 🅿️ Advanced Parking & Insurance
+- **Persistent Storage**: Valid wagons are saved to the database and survive server restarts.
+- **Ghost Wagon Protection**: Use the **"Force Return (Insurance)"** button in the parking menu to retrieve wagons that have fallen under the map, been destroyed, or lost to OneSync issues. No admin intervention required!
+- **Stash Integration**: Every crafted wagon comes with its own unique stash (`rsg-inventory` / `ox_inventory`), accessible via Third Eye.
 
 ### 💼 Employee Management (Boss Menu)
 - **In-Game Hiring**: Bosses can hire nearby players directly through the "Job Management" UI.
-- **Roster Management**: View all employees, their grades, and their stats.
-- **Promote/Fire**: Manage your workforce with simple UI buttons.
-- **Strict Job Locations**: Supports location-based jobs (e.g., a "Blackwater Wagon Maker" cannot access the "Valentine" management menu).
+- **Roster Management**: View all employees, their grades, and stats.
+- **Promote/Fire**: Manage your workforce with simple UI clicks.
+- **Location-Based Jobs**: Supports specific jobs per town (e.g., `wagon_valentine` vs `wagon_blackwater`).
 
-### 🅿️ Parking & Storage Locations
-The script features **7 pre-configured Wagon Yards** across the map where players can spawn and store their crafted wagons:
+### 🌍 NPC-Based Zones
+- We have moved away from invisible markers. All interactions are handled via **NPCs** using `ox_target`.
+    - **Crafting NPC**: The master craftsman who handles orders and previews.
+    - **Stable Master NPC**: The yard manager who handles parking and storage.
 
-| Location | Job Name | Blip Name |
+---
+
+## 📍 Locations & Jobs
+
+The resource is pre-configured with **7 Wagon Workshops**, each with distinct job requirements:
+
+| Location | Job Name | Zone Type |
 |----------|----------|-----------|
-| Valentine | `wagon_valentine` | Parking - Valentine |
-| Rhodes | `wagon_rhodes` | Parking - Rhodes |
-| Saint Denis | `wagon_saint` | Parking - Saint Denis |
-| Blackwater | `wagon_blackwater` | Parking - Blackwater |
-| Strawberry | `wagon_strawberry` | Parking - Strawberry |
-| Armadillo | `wagon_armadillo` | Parking - Armadillo |
-| Tumbleweed | `wagon_tumbleweed` | Parking - Tumbleweed |
+| **Valentine** | `wagon_valentine` | NPC |
+| **Rhodes** | `wagon_rhodes` | NPC |
+| **Saint Denis** | `wagon_saint` | NPC |
+| **Blackwater** | `wagon_blackwater` | NPC |
+| **Strawberry** | `wagon_strawberry` | NPC |
+| **Armadillo** | `wagon_armadillo` | NPC |
+| **Tumbleweed** | `wagon_tumbleweed` | NPC |
 
-**How Parking Works:**
-1. **Spawn**: Talk to the Wagon Yard NPC and select a wagon from your owned list to spawn it.
-2. **Store**: Drive your wagon back to any Wagon Yard and use the ox_target interaction to store it.
-3. **Persistence**: All wagons are saved to the database and persist across server restarts.
-4. **Ghost Protection**: If a wagon despawns unexpectedly, it's automatically marked as "stored" so you can spawn it again.
-
-### 📍 Pre-Configured Locations
-The resource comes pre-setup with 7 distinct Wagon Maker workshops across the map, each capable of having its own dedicated "boss" and employees:
-1.  **Valentine** (`wagon_valentine`)
-2.  **Rhodes** (`wagon_rhodes`)
-3.  **Saint Denis** (`wagon_saint`)
-4.  **Blackwater** (`wagon_blackwater`)
-5.  **Strawberry** (`wagon_strawberry`)
-6.  **Armadillo** (`wagon_armadillo`)
-7.  **Tumbleweed** (`wagon_tumbleweed`)
-
-### 🎭 Roleplay Value
-Unlike default scripts where players simply buy wagons from a generic NPC, `rsg-wagonmaker` creates a dedicated **profession**:
--   **Player-Driven Economy**: Wagons don't just appear; they must be *built*. This creates demand for raw materials (wood, iron, leather), fueling jobs for lumberjacks, miners, and hunters.
--   **No "Magical" Spawning**: Players have to actually craft the item, adding weight and value to the ownership of a wagon.
--   **Job Creation**: Instead of a server command giving a wagon, players must visit a Wagon Maker player, negotiate a price, and wait for their order, fostering interaction.
+> **Note:** You can easily add more locations in `config.lua` by simply adding new NPC entries.
 
 ---
 
 ## 📦 Installation
 
-1.  **Dependencies**: Ensure you have the following resources installed and started:
+1.  **Dependencies**:
     -   `rsg-core`
     -   `ox_lib`
     -   `ox_target` (Required for interaction)
-    -   `ox_inventory` (Recommended for stashes/materials) OR `rsg-inventory`
+    -   `ox_inventory` OR `rsg-inventory`
 
 2.  **Database Setup**:
-    -   Import the provided SQL file `sql/wagonmaker.sql` into your database.
-    -   **IMPORTANT**: Ensure the `wagon_maker_employees` table is created for the employee system to work.
+    -   Import the provided SQL file `sql/wagonmaker.sql`.
+    -   It creates two tables:
+        -   `wagonmaker_wagons`: Stores player wagons, customization, and stash ID.
+        -   `wagon_maker_employees`: Stores job-specific employee data.
 
-    ```sql
-    CREATE TABLE IF NOT EXISTS `wagon_maker_employees` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `job_name` varchar(50) NOT NULL,
-      `citizenid` varchar(50) NOT NULL,
-      `player_name` varchar(100) DEFAULT NULL,
-      `grade` int(11) DEFAULT 0,
-      `hired_date` timestamp NOT NULL DEFAULT current_timestamp(),
-      PRIMARY KEY (`id`),
-      UNIQUE KEY `unique_employee` (`job_name`, `citizenid`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ```
+3.  **Config**:
+    -   Check `config.lua` to adjust prices, crafting times, or add new wagon models.
 
-3.  **Add to Server Config**:
+4.  **Start**:
     -   Add `ensure rsg-wagonmaker` to your `server.cfg`.
-
-4.  **Restart Server**: Start the server to load the resource.
 
 ---
 
-## ⚙️ Configuration Guide (`config.lua`)
+## ⚙️ Configuration Guide
 
-### 1. Adding/Editing Wagons
-You can add new wagons or modify existing recipes in `Config.Wagons`.
+### 1. Adding Wagons (`Config.Wagons`)
+Add new recipes easily. The script handles the logic.
 
 ```lua
-cart01 = {
-    label = "Light Peasant Cart",       -- Display Name
-    description = "A simple cart...",   -- UI Description
-    category = "carts",                 -- Category filter
-    craftTime = 30000,                  -- Time in ms (30s)
-    materials = {                       -- Required items
+['cart01'] = {
+    label = "Light Peasant Cart",
+    description = "A simple cart for light transport.",
+    category = "carts",
+    craftTime = 30000, -- 30 seconds
+    materials = {
         { item = "wood_log", amount = 8 },
         { item = "iron_parts", amount = 4 },
     },
-    model = "cart01",                   -- Spawn Model Name
-    maxWeight = 150000,                 -- Stash Weight (grams) = 150kg
-    slots = 60,                         -- Stash Slots
+    model = "cart01", -- The actual spawn code
+    maxWeight = 150000, -- 150kg Stash
+    slots = 60,
+    -- Customization Options (if supported by model)
+    customizations = {
+        livery = { 0, 1, 2 },
+        tint = { 0, 1, 3 }
+    }
 }
 ```
 
-### 📦 Wagon Storage & Slots Guide
+### 2. Setting Up Zones (`Config.CraftingNPCs` & `Config.ParkingNPCs`)
+Instead of coordinates for markers, you now define **NPCs**.
 
-Each wagon has its own inventory stash with `maxWeight` (in grams) and `slots`:
+```lua
+Config.CraftingNPCs = {
+    {
+        model = "s_m_m_valdealer_01", -- The Ped Model
+        coords = vector4(-242.42, 696.51, 113.46, 226.5), -- Location
+        previewPoint = vector4(-238.21, 701.32, 113.52, 90.0), -- Where the preview wagon appears
+        requiredJob = "wagon_valentine" -- Job restriction
+    }
+}
+```
 
-| Wagon Category | Weight Range | Slots | Description |
-|----------------|--------------|-------|-------------|
-| **Carts** | 150-220kg | 60 | Small carts for light loads |
-| **Buggies** | 200-300kg | 60 | Personal transport with limited storage |
-| **Coaches** | 350-480kg | 60-80 | Passenger carriages with moderate storage |
-| **Work Wagons** | 300-800kg | 60-150 | Heavy-duty freight and supply wagons |
-| **Stagecoaches** | 450-700kg | 60-120 | Long-distance transport wagons |
-| **Special/Military** | 550-1000kg | 60-120 | Armored and combat wagons |
-| **Specialty Commercial** | 320-420kg | 30-60 | Circus, dairy, delivery wagons |
-
-**Notes:**
-- `maxWeight` is in **grams** (150000 = 150kg)
-- Larger wagons require more materials to craft
-- Some special wagons require higher employee grades (`requiredGrade`)
-- All wagons have `price = 0` - players craft using materials only
-
-### 2. Job & Location Setup
-You can control whether players need a specific job for each town's wagon workshop.
-
--   **`Config.JobMode = 'location'`**: (Recommended) Enforces strict location jobs. A player with `wagon_blackwater` job can ONLY operate in Blackwater.
--   **`Config.ParkingNPCs`**: Defines where players spawn/store wagons.
--   **`Config.StaticZones`**: Defines where the Crafting Circle (Third Eye) interaction is located.
-
-**Example - Adding a New Location:**
-1.  Go to the location in-game.
-2.  Use `/wm_getcoords` (Admin only) to get accurate coordinates.
-3.  Add a new entry to `Config.ParkingNPCs` (for the stable master) and `Config.StaticZones` (for the crafting circle).
-4.  **Important**: Ensure `requiredJob` matches the job grade/name you want to restrict it to.
-
-### 3. Tuning Performance
--   **`Config.UseOxTarget = true`**: Highly recommended to keep `true` for performance. Disabling it reverts to distance-based loop checks which are heavier.
--   **Zone Caching**: The server automatically caches zones. No config needed, works out of the box for 100+ players.
+### 3. Tuning
+-   **`Config.UseOxTarget = true`**: Keep this enabled for best performance and interaction.
+-   **`Config.Keybindings`**: If target is disabled, configure fallback keys here.
 
 ---
 
 ## 🎮 Player Guide
 
-### How to Craft
-1.  Go to the **Wagon Workshop** (Green Circle / Hammer Icon).
-2.  **Alt-Click (Third Eye)** the zone and select **"Craft Wagon"**.
-3.  Select a wagon from the list. You must have the required **Materials** in your inventory.
-4.  Click **Craft**. Your character will start hammering.
-5.  Once finished, the wagon is added to your "Garage/Stable".
+### How to Craft & Preview
+1.  Approach the **Crafting NPC** (usually inside the workshop).
+2.  **Alt-Click (Third Eye)** and select **"Craft Wagon"**.
+3.  Choose a wagon model.
+4.  **Preview It**:
+    -   Use **Q / E** to rotate the wagon.
+    -   Use the menu to try different **Liveries** and **Colors**.
+5.  **Craft**: Be sure you have the materials!
+    -   Once crafted, the wagon is sent to the **Stable Master**.
 
-### How to Spawn/Store
-1.  Go to the **Wagon Yard** (NPC at the hitching post nearby).
-2.  **Alt-Click** the NPC and select **"Access Wagon Yard"**.
-3.  Select your wagon to **Spawn** it.
-4.  To **Store**, bring the wagon close to the NPC, Alt-Click the NPC (or the wagon itself), and select **"Store Wagon"**.
+### How to Park & Retrieve
+1.  Go to the **Stable Master NPC** (usually outside at the hitching post).
+2.  **Alt-Click** and select **"Access Wagon Yard"**.
+3.  **Spawn**: Click your wagon to bring it out.
+4.  **Store**: Drive near the NPC and select "Store Wagon" via Third Eye or the menu.
+5.  **Lost Wagon?**: If your wagon is destroyed or lost, open the menu and click **"Force Return (Insurance)"** to reclaim it instantly.
 
-### Employee Management (Boss Only)
+### Employee Management (Bosses)
 1.  Open the **Crafting Menu**.
-2.  Click **"Job Management"** button at the top.
-3.  **Hire**: Click "Hire New", select a nearby player.
-4.  **Fire/Promote**: Use the icons next to employee names.
+2.  Click the **"Job Management"** tab.
+3.  **Hire**: Select a nearby player to employ them.
+4.  **Manage**: Promote, Demote, or Fire off-duty employees from the roster.
 
 ---
 
 ## 🛠️ Developer Exports
 
-**Server Exports:**
--   `exports['rsg-wagonmaker']:GetPlayerWagonCount(source)`
--   `exports['rsg-wagonmaker']:GetPlayerWagons(source)`
--   `exports['rsg-wagonmaker']:GetWagonById(wagonId)`
--   `exports['rsg-wagonmaker']:IsWagonSpawned(wagonId)`
+**Server Side:**
+- `exports['rsg-wagonmaker']:GetPlayerWagonCount(source)`
+- `exports['rsg-wagonmaker']:GetPlayerWagons(source)`
+- `exports['rsg-wagonmaker']:GetWagonById(wagonId)`
 
-**Common Issues:**
--   **"I can't see the Craft option!"**: Check your job. If you are `wagon_rhodes`, you cannot craft in Valentine.
--   **"My wagon disappeared!"**: The server auto-detects this. Go to the stable NPC, and it should let you spawn it again immediately.
+**Client Side:**
+- `exports['rsg-wagonmaker']:IsInPreviewZone()`
+- `exports['rsg-wagonmaker']:GetPreviewWagon()`
+
+---
+*Created for the RedM Community.*
 
 

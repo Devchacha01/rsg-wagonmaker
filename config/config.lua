@@ -64,7 +64,7 @@ Config.MoneyType = "cash"                   -- "cash" or "bank"
 -------------------------------------------------
 Config.JobRequired = true -- Set to true to require a job to craft wagons
 Config.JobMode = "location" -- "single" (one job everywhere) or "location" (different jobs per town)
-Config.GlobalJobName = "wagonmaker" -- Used if JobMode is 'single'
+Config.GlobalJobName = "wagon_maker" -- Used if JobMode is 'single'
 
 Config.JobGrades = {
     boss = 3,
@@ -81,6 +81,78 @@ Config.Keys = {
     RotateLeft = "INPUT_FRONTEND_LB",       -- Q key
     RotateRight = "INPUT_FRONTEND_RB",      -- E key
     Cancel = "INPUT_FRONTEND_CANCEL"        -- Backspace
+}
+
+-------------------------------------------------
+-- Crafting NPC Settings
+-- Use these to define static NPCs instead of using DB zones
+-------------------------------------------------
+Config.DefaultWorkerModel = "s_m_m_valdealer_01"
+
+Config.CraftingNPCs = {
+    {
+        id = "static_valentine",
+        name = "Valentine Wagon Maker",
+        coords = vector4(-242.42, 696.51, 113.46, 340.26),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_valentine",
+        previewPoint = vector3(-238.74, 702.13, 113.52),
+        previewHeading = 281.85
+    },
+    {
+        id = "static_rhodes",
+        name = "Rhodes Wagon Maker",
+        coords = vector4(1467.68, -1373.22, 78.79, 249.50),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_rhodes",
+        previewPoint = vector3(1472.25, -1378.08, 78.40),
+        previewHeading = 224.98
+    },
+    {
+        id = "static_saint_denis",
+        name = "Saint Denis Wagon Maker",
+        coords = vector4(2695.47, -870.45, 42.47, 22.0),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_saint",
+        previewPoint = vector3(2702.58, -875.31, 42.38),
+        previewHeading = 167.47
+    },
+    {
+        id = "static_blackwater",
+        name = "Blackwater Wagon Maker",
+        coords = vector4(-868.94, -1380.57, 43.65, 180.44),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_blackwater",
+        previewPoint = vector3(-877.50, -1383.58, 43.61),
+        previewHeading = 276.05
+    },
+    {
+        id = "static_strawberry",
+        name = "Strawberry Wagon Maker",
+        coords = vector4(-1826.29, -570.82, 156.05, 161.84),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_strawberry",
+        previewPoint = vector3(-1827.84, -577.88, 156.00),
+        previewHeading = 158.78
+    },
+    {
+        id = "static_armadillo",
+        name = "Armadillo Wagon Maker",
+        coords = vector4(-3681.45, -2565.50, -13.51, 167.90),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_armadillo",
+        previewPoint = vector3(-3686.87, -2575.38, -13.68),
+        previewHeading = 206.74
+    },
+    {
+        id = "static_tumbleweed",
+        name = "Tumbleweed Wagon Maker",
+        coords = vector4(-5524.76, -3055.89, -2.22, 144.41),
+        model = "s_m_m_valdealer_01",
+        job = "wagon_tumbleweed",
+        previewPoint = vector3(-5533.76, -3060.18, -1.26),
+        previewHeading = 274.13
+    }
 }
 
 -------------------------------------------------
@@ -235,134 +307,7 @@ Config.ParkingNPCs = {
 -- Static Crafting Zones (no database needed)
 -- These zones will always appear at these locations
 -------------------------------------------------
-Config.StaticZones = {
-    {
-        id = 1,
-        type = "crafting",
-        x = -243.47,
-        y = 696.67,
-        z = 113.45,
-        radius = 2.0,
-        requiredJob = "wagon_valentine"
-    },
-    {
-        id = 2,
-        type = "preview",
-        x = -236.98,
-        y = 701.37,
-        z = 113.54,
-        radius = 5.0,  -- Larger radius for preview area
-        requiredJob = "wagon_valentine"
-    },
-    {
-        id = 3,
-        type = "crafting",
-        x = 1467.48,
-        y = -1373.91,
-        z = 78.78,
-        radius = 2.0,
-        requiredJob = "wagon_rhodes"
-    },
-    {
-        id = 4,
-        type = "preview",
-        x = 1474.70,
-        y = -1379.12,
-        z = 78.23,
-        radius = 5.0,
-        requiredJob = "wagon_rhodes"
-    },
-    {
-        id = 5,
-        type = "crafting",
-        x = 2703.13,
-        y = -885.07,
-        z = 42.63,
-        radius = 2.0,
-        requiredJob = "wagon_saint"
-    },
-    {
-        id = 6,
-        type = "preview",
-        x = 2703.22,
-        y = -877.08,
-        z = 42.44,
-        radius = 5.0,
-        requiredJob = "wagon_saint"
-    },
-    {
-        id = 7,
-        type = "crafting",
-        x = -867.57,
-        y = -1380.02,
-        z = 43.68,
-        radius = 2.0,
-        requiredJob = "wagon_blackwater"
-    },
-    {
-        id = 8,
-        type = "preview",
-        x = -858.02,
-        y = -1382.24,
-        z = 43.61,
-        radius = 5.0,
-        requiredJob = "wagon_blackwater"
-    },
-    {
-        id = 9,
-        type = "crafting",
-        x = -1825.50,
-        y = -571.32,
-        z = 156.05,
-        radius = 2.0,
-        requiredJob = "wagon_strawberry"
-    },
-    {
-        id = 10,
-        type = "preview",
-        x = -1829.39,
-        y = -577.91,
-        z = 156.00,
-        radius = 5.0,
-        requiredJob = "wagon_strawberry"
-    },
-    {
-        id = 11,
-        type = "crafting",
-        x = -3681.44,
-        y = -2566.32,
-        z = -13.51,
-        radius = 2.0,
-        requiredJob = "wagon_armadillo"
-    },
-    {
-        id = 12,
-        type = "preview",
-        x = -3686.25,
-        y = -2572.53,
-        z = -13.67,
-        radius = 5.0,
-        requiredJob = "wagon_armadillo"
-    },
-    {
-        id = 13,
-        type = "crafting",
-        x = -5524.30,
-        y = -3056.44,
-        z = -2.19,
-        radius = 2.0,
-        requiredJob = "wagon_tumbleweed"
-    },
-    {
-        id = 14,
-        type = "preview",
-        x = -5531.60,
-        y = -3058.85,
-        z = -1.51,
-        radius = 5.0,
-        requiredJob = "wagon_tumbleweed"
-    }
-}
+Config.StaticZones = {} -- Removed old static zones. Using NPC-based zones now.
 
 
 -------------------------------------------------
