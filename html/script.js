@@ -11,7 +11,7 @@ window.addEventListener('message', function (event) {
         // Used for Livery/Tint selection
         openOptions(data.title, data.options, data.callbackName, data.layout);
     } else if (data.action === 'openManagement') {
-        openManagement(data.balance, data.grade);
+        openManagement(data.balance, data.grade, data.jobName);
     }
 });
 
@@ -78,7 +78,10 @@ function openMenu(wagons) {
     } catch (e) { }
 }
 
-function openManagement(balance, grade) {
+let currentJobName = null;
+
+function openManagement(balance, grade, jobName) {
+    currentJobName = jobName; // Store for API calls
     const app = document.getElementById('app');
     const wagonList = document.getElementById('wagon-list');
     const optionList = document.getElementById('option-list');
@@ -153,7 +156,7 @@ async function loadEmployees() {
     const response = await fetch(`https://${GetParentResourceName()}/getEmployees`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ jobName: currentJobName })
     });
 
     if (response.ok) {
@@ -200,7 +203,7 @@ async function promoteEmployee(citizenId, currentGrade) {
     await fetch(`https://${GetParentResourceName()}/updateGrade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({ citizenId: citizenId, newGrade: newGrade })
+        body: JSON.stringify({ citizenId: citizenId, newGrade: newGrade, jobName: currentJobName })
     });
     // Refresh list
     setTimeout(loadEmployees, 500);
@@ -210,7 +213,7 @@ async function fireEmployee(citizenId) {
     await fetch(`https://${GetParentResourceName()}/firePlayer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({ citizenId: citizenId })
+        body: JSON.stringify({ citizenId: citizenId, jobName: currentJobName })
     });
     // Refresh list
     setTimeout(loadEmployees, 500);
@@ -259,7 +262,7 @@ async function hirePlayer(targetId) {
     await fetch(`https://${GetParentResourceName()}/hirePlayer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({ targetId: targetId })
+        body: JSON.stringify({ targetId: targetId, jobName: currentJobName })
     });
     closeHireModal();
     setTimeout(loadEmployees, 500);

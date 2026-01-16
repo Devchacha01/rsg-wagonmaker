@@ -273,7 +273,8 @@ function OpenManagementOptions()
         SendNUIMessage({
             action = 'openManagement',
             balance = balance or 0,
-            grade = grade
+            grade = grade,
+            jobName = ActiveCraftingJob -- Pass the current zone's required job
         })
     end)
 end

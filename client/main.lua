@@ -25,32 +25,12 @@ CreateThread(function()
         RSGCore = exports['rsg-core']:GetCoreObject()
     end
     
-    -- Wait for player to be loaded
-    while not LocalPlayer.state.isLoggedIn do
-        Wait(100)
+    -- Handle resource restart (Player already logged in)
+    if LocalPlayer.state.isLoggedIn then
+        PlayerData = RSGCore.Functions.GetPlayerData()
+        TriggerServerEvent('rsg-wagonmaker:server:requestZones')
+        SpawnParkingNPCs()
     end
-    
-    PlayerData = RSGCore.Functions.GetPlayerData()
-    
-    -- Load static zones from config immediately
-    -- DISABLED: We use loadZones event to handle Config.CraftingNPCs now to prevent duplicates
-    -- if Config.StaticZones then
-    --     for _, zone in ipairs(Config.StaticZones) do
-    --         table.insert(Zones, zone)
-    --         if zone.type == 'crafting' then
-    --             CreateCraftingBlip(zone)
-    --             if not zone.model then zone.model = Config.DefaultWorkerModel end
-    --             local success, err = pcall(SpawnCraftingNPC, zone)
-    --             if not success and Config.Debug then print("^1Error spawning static NPC: " .. err .. "^7") end
-    --         end
-    --     end
-    -- end
-    
-    -- Load zones from server (will add to existing static zones)
-    TriggerServerEvent('rsg-wagonmaker:server:requestZones')
-    
-    -- Spawn parking NPCs (without blips now)
-    SpawnParkingNPCs()
     
     -- Register Decorator for ID persistence
     DecorRegister("wagon_id", 3) -- 3 = Int
@@ -70,7 +50,9 @@ end)
 
 RegisterNetEvent('RSGCore:Client:OnPlayerLoaded', function()
     PlayerData = RSGCore.Functions.GetPlayerData()
+    -- Request data on fresh login
     TriggerServerEvent('rsg-wagonmaker:server:requestZones')
+    SpawnParkingNPCs()
     if Config.Debug then
         print('^3[WagonMaker] PlayerData loaded, job: ' .. tostring(PlayerData.job and PlayerData.job.name) .. '^7')
     end
@@ -128,8 +110,9 @@ function SpawnCraftingNPC(zone)
 
     local model = GetHashKey(zone.model or Config.DefaultWorkerModel)
     
-    -- Print unconditional debug
-    print(string.format("[WagonMaker] Attempting to spawn NPC. Model: %s, Coords: %.2f, %.2f, %.2f", zone.model or Config.DefaultWorkerModel, zone.x, zone.y, zone.z))
+    if Config.Debug then
+        print(string.format("[WagonMaker] Attempting to spawn NPC. Model: %s, Coords: %.2f, %.2f, %.2f", zone.model or Config.DefaultWorkerModel, zone.x, zone.y, zone.z))
+    end
     
     RequestModel(model)
     local timeout = 0
@@ -137,7 +120,7 @@ function SpawnCraftingNPC(zone)
         Wait(10)
         timeout = timeout + 1
         if timeout > 500 then 
-            print("[WagonMaker] ^1ERROR: Model timed out: " .. (zone.model or "default") .. "^7")
+            if Config.Debug then print("[WagonMaker] ^1ERROR: Model timed out: " .. (zone.model or "default") .. "^7") end
             return 
         end
     end
@@ -153,7 +136,9 @@ function SpawnCraftingNPC(zone)
     SetBlockingOfNonTemporaryEvents(ped, true)
     SetModelAsNoLongerNeeded(model) -- Good practice
     
-    print("[WagonMaker] ^2Success: Entity ID " .. tostring(ped) .. "^7")
+    if Config.Debug then
+        print("[WagonMaker] ^2Success: Entity ID " .. tostring(ped) .. "^7")
+    end
     
     -- Store reference
     table.insert(CraftingNPCs, ped)
@@ -198,7 +183,16 @@ end
 -- ========================================
 
 RegisterNetEvent('rsg-wagonmaker:client:loadZones', function(zones)
-    -- Add database zones to existing static zones (don't reset Zones table)
+    -- CLEANUP: Remove pending entities to prevent duplicates on reload
+    for _, ped in pairs(CraftingNPCs) do
+        if DoesEntityExist(ped) then
+            DeleteEntity(ped)
+        end
+    end
+    CraftingNPCs = {}
+    Zones = {}
+
+    -- Add database zones to existing static zones
     if zones then
         for _, zone in ipairs(zones) do
             if zone.type == "crafting" then
@@ -279,6 +273,17 @@ end)
 -- ========================================
 
 function SpawnParkingNPCs()
+    -- Cleanup existing parking NPCs
+    for _, ped in pairs(ParkingNPCs) do
+         if DoesEntityExist(ped) then DeleteEntity(ped) end
+    end
+    ParkingNPCs = {}
+    
+    for _, blip in pairs(ParkingBlips) do
+        if DoesBlipExist(blip) then RemoveBlip(blip) end
+    end
+    ParkingBlips = {}
+
     for _, npc in ipairs(Config.ParkingNPCs) do
         local model = GetHashKey(npc.model)
         
