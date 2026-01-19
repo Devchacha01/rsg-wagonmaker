@@ -78,8 +78,8 @@ Config.JobGrades = {
 -------------------------------------------------
 Config.Keys = {
     Interact = "INPUT_FRONTEND_ACCEPT",     -- Enter/E key
-    RotateLeft = "INPUT_FRONTEND_LB",       -- Q key
-    RotateRight = "INPUT_FRONTEND_RB",      -- E key
+    RotateLeft = "INPUT_FRONTEND_LEFT",     -- Left Arrow Key (0xA65EBAB4)
+    RotateRight = "INPUT_FRONTEND_RIGHT",   -- Right Arrow Key (0xDEB34313)
     Cancel = "INPUT_FRONTEND_CANCEL"        -- Backspace
 }
 
@@ -1468,7 +1468,7 @@ Config.Locale = {
     ["transfer_cancelled"] = "Transfer cancelled by owner.",
     
     -- Preview
-    ["preview_started"] = "Previewing %s - Use Q/E to rotate",
+    ["preview_started"] = "Previewing %s - Use Left/Right Arrow to rotate",
     ["preview_timeout"] = "Preview time expired.",
     
     -- Admin

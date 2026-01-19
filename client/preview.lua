@@ -132,21 +132,37 @@ RegisterNetEvent('rsg-wagonmaker:client:startPreview', function(model, customiza
     
     SpawnPreview(spawnLocation)
 
-    -- ADDED: Rotation Loop for Q/E
+    -- Unified Input Handling Loop
     CreateThread(function()
+        local rotateLeftHash = GetHashKey(Config.Keys.RotateLeft)
+        local rotateRightHash = GetHashKey(Config.Keys.RotateRight)
+        local interactHash = GetHashKey(Config.Keys.Interact)
+        
         while PreviewWagon and DoesEntityExist(PreviewWagon) do
-            Wait(0)
-            -- Q Key (Rotate Left)
-            if IsControlPressed(0, 0xDE794E3E) then 
+            local sleep = 5
+            
+            -- Prepare Prompts
+            local groupLabel = CreateVarString(10, "LITERAL_STRING", GetLocale("preview_zone") or "Preview Mode")
+            PromptSetActiveGroupThisFrame(PreviewGroup, groupLabel, 0, 0, 0, 0)
+            
+            -- Rotate Left
+            if IsControlPressed(0, rotateLeftHash) then 
                 local currentHeading = GetEntityHeading(PreviewWagon)
                 SetEntityHeading(PreviewWagon, currentHeading + 1.0)
             end
             
-            -- E Key (Rotate Right)
-            if IsControlPressed(0, 0xCEFD9220) then 
+            -- Rotate Right
+            if IsControlPressed(0, rotateRightHash) then 
                 local currentHeading = GetEntityHeading(PreviewWagon)
                 SetEntityHeading(PreviewWagon, currentHeading - 1.0)
             end
+            
+            -- Exit Check (Prompt)
+            if PromptHasStandardModeCompleted(PreviewPrompt) then
+                EndPreview()
+            end
+            
+            Wait(sleep)
         end
     end)
 end)
