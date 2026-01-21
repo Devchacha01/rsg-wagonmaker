@@ -54,6 +54,16 @@ function openMenu(wagons) {
         const tabContainer = document.getElementById('category-tabs');
         if (tabContainer) {
             tabContainer.innerHTML = '';
+
+            // Back to Crafting Main Menu
+            const backBtn = document.createElement('button');
+            backBtn.className = 'tab-btn back-btn';
+            backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back';
+            backBtn.onclick = () => {
+                goBackToCraftingMain();
+            };
+            tabContainer.appendChild(backBtn);
+
             categories.forEach(cat => {
                 const btn = document.createElement('button');
                 btn.className = 'tab-btn';
@@ -76,6 +86,16 @@ function openMenu(wagons) {
 
         app.style.display = 'flex';
     } catch (e) { }
+}
+
+function goBackToCraftingMain() {
+    // Close UI immediately, then ask client to reopen crafting main menu
+    closeMenu(false);
+    fetch(`https://${GetParentResourceName()}/backToCraftingMain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify({})
+    });
 }
 
 let currentJobName = null;

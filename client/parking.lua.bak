@@ -7,10 +7,6 @@ local RSGCore = exports['rsg-core']:GetCoreObject()
 
 MyWagon = nil
 local MyWagonId = nil
-local MyWagonType = 'personal' -- 'personal' or 'stock'
-local MyStockWagonId = nil
-local StockCache = {}
-local CurrentStockOptionData = nil
 local MyWagonBlip = nil
 local MyWagonData = nil
 
@@ -19,24 +15,8 @@ local WagonStashPrompt = nil
 local WagonStorePrompt = nil
 local ParkPrompt = nil
 local OpenPersonalParkingMenu -- forward declaration
-local ParkingGroup
-do
-    if type(GetRandomIntInRange) == 'function' then
-        ParkingGroup = GetRandomIntInRange(0, 0xffffff)
-    else
-        math.randomseed(GetGameTimer() or os.time())
-        ParkingGroup = math.random(0, 0xffffff)
-    end
-end
-local WagonGroup
-do
-    if type(GetRandomIntInRange) == 'function' then
-        WagonGroup = GetRandomIntInRange(0, 0xffffff)
-    else
-        math.randomseed(GetGameTimer() or os.time())
-        WagonGroup = math.random(0, 0xffffff)
-    end
-end
+local ParkingGroup = GetRandomIntInRange(0, 0xffffff)
+local WagonGroup = GetRandomIntInRange(0, 0xffffff)
 
 -- ========================================
 -- Prompt Setup
@@ -108,12 +88,7 @@ CreateThread(function()
                 if PromptHasHoldModeCompleted(WagonStashPrompt) and MyWagonData then
                     OpenWagonStash(MyWagonData)
                 elseif PromptHasHoldModeCompleted(WagonStorePrompt) then
-                    if MyWagonType == 'stock' and MyStockWagonId then
-                        local parkingNPC = GetClosestParkingNPC()
-                        OpenStockStoreMenu(parkingNPC)
-                    else
-                        StoreWagon(MyWagonId)
-                    end
+                    StoreWagon(MyWagonId)
                 end
             end
         end
@@ -155,8 +130,6 @@ CreateThread(function()
     if Config.UseOxTarget then return end
     
     local accessingWagonStr = nil
-    local lastVehicleCheck = 0
-    local isNearVehicle = false
 
     while true do
         local sleep = 500
@@ -252,11 +225,8 @@ local function IsWagonmakerEmployee(requiredJob)
         if requiredJob and requiredJob ~= '' then
             return jobName == tostring(requiredJob)
         end
-        -- Fallback: if no required job was passed (misconfigured NPC), allow:
-        -- 1) any wagon_* location job, or
-        -- 2) the configured global job
-        local global = (Config and Config.GlobalJobName) and tostring(Config.GlobalJobName) or 'wagonmaker'
-        return (jobName:sub(1, 7) == 'wagon_') or (jobName == global)
+        -- Fallback: allow any wagon_ job if no required job passed
+        return jobName:sub(1, 7) == 'wagon_'
     end
 
     -- Single/global mode
@@ -266,28 +236,14 @@ end
 local function OpenBusinessParkingMenu(parkingNPC)
     lib.callback('rsg-wagonmaker:server:getStockList', false, function(stock)
         stock = stock or {}
-        StockCache = {}
-        for _, w in ipairs(stock) do
-            if w and w.id then StockCache[tonumber(w.id)] = w end
-        end
         if #stock == 0 then
             Notify('No wagons available in business stock.', 'inform')
             return
         end
 
         local nuiOptions = {}
-        table.insert(nuiOptions, {
-            label = 'Back',
-            description = 'Return to the wagon yard menu',
-            value = 'back_main',
-            icon = 'arrow-left'
-        })
-
         for _, wagon in ipairs(stock) do
             local desc = ('Serial: %s'):format(tostring(wagon.serial or 'N/A'))
-            if wagon.status then
-                desc = desc .. ('\nStatus: %s'):format(tostring(wagon.status))
-            end
             if wagon.price and tonumber(wagon.price) and tonumber(wagon.price) > 0 then
                 desc = desc .. ('\nPrice: $%d'):format(tonumber(wagon.price))
             end
@@ -343,12 +299,21 @@ function OpenParkingMenu(parkingNPC)
     })
     lib.showContext('wagonmaker_yard_select')
 end
+,
+                },
+                {
+                    title = 'Business Wagon Yard',
+                    icon = 'warehouse',
+                    onSelect = function() OpenBusinessParkingMenu(parkingNPC) end,
+                },
+            }
+        })
+        lib.showContext('wagonmaker_yard_select')
+        return
+    end
 
--- Event bridge: ox_target calls this from client/main.lua
-RegisterNetEvent('rsg-wagonmaker:client:openParkingMenu', function(parkingNPC)
-    OpenParkingMenu(parkingNPC)
-end)
-
+    OpenPersonalParkingMenu(parkingNPC)
+end
 
 
 OpenPersonalParkingMenu = function(parkingNPC)
@@ -368,13 +333,6 @@ OpenPersonalParkingMenu = function(parkingNPC)
             
             local nuiOptions = {}
             
-            table.insert(nuiOptions, {
-                label = 'Back',
-                description = 'Return to the wagon yard menu',
-                value = 'back_main',
-                icon = 'arrow-left'
-            })
-
             -- Pending Transfers Option (if any)
             if #transfers > 0 then
                 table.insert(nuiOptions, {
@@ -414,110 +372,16 @@ end
 
 RegisterNUICallback('parkingMenuSelect', function(data, cb)
     local value = data.value
-
-    -- Normalize value types coming back from NUI (string/number/table/json-string)
-    if type(value) == 'number' then
-        value = tostring(value)
-    elseif type(value) == 'string' then
-        local trimmed = value:gsub('^%s+', ''):gsub('%s+$', '')
-        if trimmed:sub(1,1) == '{' and trimmed:sub(-1) == '}' then
-            local ok, decoded = pcall(json.decode, trimmed)
-            if ok and type(decoded) == 'table' then
-                value = decoded
-            end
-        end
-    end
-
-    if type(value) == 'table' then
-        -- Allow table payloads for stock wagons
-        if value.stockId then
-            value = 'stock:' .. tostring(value.stockId)
-        elseif value.id and value.kind == 'stock' then
-            value = 'stock:' .. tostring(value.id)
-        elseif value.value then
-            value = value.value
-        end
-    end
-
     SetNuiFocus(false, false)
-
-    if value == 'back_main' then
-        local npc = GetClosestParkingNPC()
-        if npc then
-            OpenParkingMenu(npc)
-        end
-        if cb then cb('ok') end
-        return
-    end
--- Business stock selection
-if type(value) == 'string' and value:sub(1, 6) == 'stock:' then
-    local stockId = tonumber(value:sub(7))
-    if stockId then
-        local stockWagon = StockCache and StockCache[stockId] or nil
-        if not stockWagon then
-            Notify('Stock wagon data not found. Reopen the business yard.', 'error')
+    -- Business stock selection
+    if type(value) == 'string' and value:sub(1, 6) == 'stock:' then
+        local stockId = tonumber(value:sub(7))
+        if stockId then
+            TriggerServerEvent('rsg-wagonmaker:server:transferStockWagon', stockId, 0)
             if cb then cb('ok') end
             return
         end
-
-        local parkingNPC = GetClosestParkingNPC()
-        CurrentStockOptionData = { stock = stockWagon, npc = parkingNPC }
-
-        local nuiOptions = {
-            {
-                label = 'Back',
-                description = 'Return to business stock list',
-                value = 'stock_back',
-                icon = 'arrow-left'
-            },
-            {
-                label = 'Spawn at Yard',
-                description = 'Spawn this cart at the yard spawn point (does not sell it).',
-                value = 'stock_spawn',
-                icon = 'horse-head'
-            },
-
-            {
-                label = GetLocale('parking_rename'),
-                description = 'Change the cart name in business stock.',
-                value = 'stock_rename',
-                icon = 'pen'
-            },
-
-            
-            {
-                label = 'Sell to Player (Server ID)',
-                description = 'Sell this cart to another player using their server ID.',
-                value = 'stock_sell_player',
-                icon = 'dollar-sign'
-            }
-        }
-
-        
-        -- Only show "Park Currently Spawned Cart" when a business stock cart is actually spawned
-        if MyWagonType == 'stock' and MyStockWagonId and MyWagon and DoesEntityExist(MyWagon) then
-            table.insert(nuiOptions, 2, {
-                label = 'Park Currently Spawned Cart',
-                description = 'Store the stock cart you currently have spawned back into the business yard.',
-                value = 'stock_park_current',
-                icon = 'warehouse'
-            })
-        end
-
-SetNuiFocus(true, true)
-        SendNUIMessage({
-            action = 'openOptions',
-            title = (stockWagon.name or stockWagon.model or 'Business Stock Cart'),
-            options = nuiOptions,
-            callbackName = 'businessStockOptionSelect',
-            layout = 'list'
-        })
-
-        if cb then cb('ok') end
-        return
     end
-end
-
 
     
     if value == 'pending_transfers' then
@@ -613,84 +477,6 @@ function OpenWagonOptionsMenu(wagon, parkingNPC)
     })
 end
 
-
-RegisterNUICallback('businessStockOptionSelect', function(data, cb)
-    local value = data.value
-    SetNuiFocus(false, false)
-
-    if not CurrentStockOptionData or not CurrentStockOptionData.stock then
-        if cb then cb('ok') end
-        return
-    end
-
-    local stock = CurrentStockOptionData.stock
-    local npc = CurrentStockOptionData.npc
-
-    
-
-if value == 'stock_back' then
-    if npc then OpenBusinessParkingMenu(npc) end
-    if cb then cb('ok') end
-    return
-elseif value == 'stock_spawn' then
-    if not npc then
-        Notify('No nearby yard found to spawn at.', 'error')
-        if cb then cb('ok') end
-        return
-    end
-    SpawnStockWagon(stock, npc)
-elseif value == 'stock_park_current' then
-    -- Store the currently spawned stock wagon back into BUSINESS stock (no destination choice)
-    if not MyStockWagonId or not MyWagon or not DoesEntityExist(MyWagon) then
-        Notify('No stock cart is currently spawned.', 'error')
-        if cb then cb('ok') end
-        return
-    end
-
-    -- If the selected stock differs from the currently spawned one, still allow parking the currently spawned cart
-    if stock and stock.id and tonumber(stock.id) and MyStockWagonId ~= tonumber(stock.id) then
-        Notify(('Parking currently spawned stock cart (ID %s).'):format(tostring(MyStockWagonId)), 'inform')
-    end
-
-    StoreStockWagon('business', npc)
-    Wait(600)
-    if npc then OpenBusinessParkingMenu(npc) end
-elseif value == 'stock_rename' then
-    RenameStockWagon(stock, npc)
-elseif value == 'stock_sell_player' then
-    local input = lib.inputDialog('Sell Cart to Player', {
-        { type = 'number', label = 'Buyer Server ID', description = 'Example: 12', required = true, min = 1 },
-        { type = 'number', label = 'Sale Price', description = 'Dollar amount (must be > 0)', required = true, min = 1 }
-    })
-
-    if not input then
-        if cb then cb('ok') end
-        return
-    end
-
-    local targetId = tonumber(input[1])
-    local price = tonumber(input[2])
-
-    if not targetId or targetId < 1 then
-        Notify('Invalid buyer server ID.', 'error')
-        if cb then cb('ok') end
-        return
-    end
-    if not price or price <= 0 then
-        Notify('Invalid price.', 'error')
-        if cb then cb('ok') end
-        return
-    end
-
-    TriggerServerEvent('rsg-wagonmaker:server:transferStockWagon', tonumber(stock.id), targetId, price)
-    Wait(900)
-    if npc then OpenBusinessParkingMenu(npc) end
-end
-
-
-    if cb then cb('ok') end
-end)
-
 RegisterNUICallback('parkingWagonOptionSelect', function(data, cb)
     local value = data.value
     SetNuiFocus(false, false)
@@ -726,8 +512,6 @@ end)
 -- ========================================
 
 function SpawnWagon(wagon, parkingNPC)
-    MyWagonType = 'personal'
-    MyStockWagonId = nil
     -- Check if player already has a wagon out
     if MyWagon and DoesEntityExist(MyWagon) then
         Notify(GetLocale('already_spawned'), 'error')
@@ -835,11 +619,7 @@ function CreateWagonTarget(entity, wagonData)
             icon = "fas fa-warehouse",
             label = "Store Wagon",
             onSelect = function()
-                if wagonData and wagonData.isStock then
-                    OpenStockStoreMenu()
-                else
-                    StoreWagon(wagonData.id)
-                end
+                StoreWagon(wagonData.id)
             end,
             distance = 3.0,
             canInteract = function(entity, distance, coords, name)
@@ -868,67 +648,6 @@ function CreateWagonTarget(entity, wagonData)
     })
 end
 
-function SpawnStockWagon(stockWagon, parkingNPC)
-    -- Check if player already has a wagon out
-    if MyWagon and DoesEntityExist(MyWagon) then
-        Notify(GetLocale('already_spawned'), 'error')
-        return
-    end
-
-    if not stockWagon or not stockWagon.model then
-        Notify('Invalid stock wagon data.', 'error')
-        return
-    end
-
-    local hash = GetHashKey(stockWagon.model)
-    RequestModel(hash, false)
-    while not HasModelLoaded(hash) do
-        Wait(10)
-    end
-
-    -- Spawn at parking spawn point
-    MyWagon = CreateVehicle(hash,
-        parkingNPC.spawnPoint.x,
-        parkingNPC.spawnPoint.y,
-        parkingNPC.spawnPoint.z,
-        parkingNPC.spawnPoint.w,
-        true,
-        false
-    )
-
-    SetEntityAsMissionEntity(MyWagon, true, true)
-    SetVehicleOnGroundProperly(MyWagon)
-
-    -- Apply customization fields (livery/tint/props, etc.)
-    ApplyWagonCustomization(MyWagon, stockWagon)
-
-    -- Track as a stock wagon
-    MyWagonType = 'stock'
-    MyStockWagonId = tonumber(stockWagon.id)
-    MyWagonId = nil
-
-    -- Use a dedicated data shape for stock wagons so wagon interactions can mirror personal wagons
-    MyWagonData = {
-        isStock = true,
-        stock_id = MyStockWagonId,
-        model = stockWagon.model,
-        name = stockWagon.name or 'Business Stock Wagon'
-    }
-    -- Reserve in DB so other employees can see it as out (optional but helpful)
-    if MyStockWagonId then
-        TriggerServerEvent('rsg-wagonmaker:server:reserveStockWagon', MyStockWagonId)
-    end
-
-    -- Add entity target interactions for ox_target users
-    if Config.UseOxTarget then
-        CreateWagonTarget(MyWagon, MyWagonData)
-    end
-
-    Notify('Stock cart spawned.', 'success')
-end
-
-
-
 function RemoveWagonTarget()
     if MyWagon and DoesEntityExist(MyWagon) then
         exports.ox_target:removeLocalEntity(MyWagon, { "wagon_stash", "wagon_store" })
@@ -940,98 +659,26 @@ end
 -- ========================================
 
 function OpenWagonStash(wagonData)
-    if not wagonData then
+    if not wagonData or not wagonData.id then
         Notify('Invalid wagon data', 'error')
         return
     end
-
-    local stashId = nil
-    if wagonData.isStock or wagonData.stock_id then
-        local stashKey = wagonData.stock_id or wagonData.id
-        if not stashKey then
-            Notify('Invalid stock wagon data', 'error')
-            return
-        end
-        stashId = 'stockwagon_' .. tostring(stashKey)
-    else
-        if not wagonData.id then
-            Notify('Invalid wagon data', 'error')
-            return
-        end
-        stashId = 'wagon_' .. tostring(wagonData.id)
-    end
-
+    
+    local stashId = 'wagon_' .. wagonData.id
     local wagonConfig = Config.Wagons[wagonData.model]
+    
     if not wagonConfig then
         Notify('Unknown wagon type', 'error')
         return
     end
-
+    
+    
     -- Trigger server to open the stash (works with both ox and rsg inventory)
     TriggerServerEvent('rsg-wagonmaker:server:openWagonStash', stashId, {
         maxweight = wagonConfig.maxWeight or 500000,
         slots = wagonConfig.slots or 50,
         label = wagonConfig.label or 'Wagon Stash'
     })
-end
-
-
-function OpenStockStoreMenu(parkingNPC)
-    parkingNPC = parkingNPC or GetClosestParkingNPC()
-    if not parkingNPC then
-        Notify('You must be near a wagon yard NPC to store this cart.', 'error')
-        return
-    end
-
-    -- Business stock carts must always return to the business yard.
-    StoreStockWagon('business', parkingNPC)
-end
-
-function StoreStockWagon(destination, parkingNPC)
-    if not MyWagon or not DoesEntityExist(MyWagon) or not MyStockWagonId then
-        Notify('No stock cart is currently spawned.', 'error')
-        return
-    end
-
-    if destination == 'personal' then
-        TriggerServerEvent('rsg-wagonmaker:server:moveStockToPersonal', MyStockWagonId, (parkingNPC and parkingNPC.name) or nil)
-    else
-        TriggerServerEvent('rsg-wagonmaker:server:unreserveStockWagon', MyStockWagonId)
-    end
-
-    -- Delete wagon entity (network-safe)
-    local netId = NetworkGetNetworkIdFromEntity(MyWagon)
-    local ped = PlayerPedId()
-
-    if IsPedInVehicle(ped, MyWagon, false) then
-        TaskLeaveVehicle(ped, MyWagon, 16)
-        Wait(100)
-    end
-
-    if NetworkGetEntityIsNetworked(MyWagon) then
-        NetworkRequestControlOfEntity(MyWagon)
-        local timeout = 0
-        while not NetworkHasControlOfEntity(MyWagon) and timeout < 20 do
-            Wait(10)
-            timeout = timeout + 1
-        end
-        TriggerServerEvent('rsg-wagonmaker:server:forceDeleteWagon', netId)
-    else
-        DeleteEntity(MyWagon)
-    end
-
-    -- Clear local tracking
-    MyWagon = nil
-    MyWagonId = nil
-    MyWagonData = nil
-    MyWagonType = 'personal'
-    MyStockWagonId = nil
-
-    if destination == 'personal' then
-        Notify('Cart transferred to your personal yard and stored.', 'success')
-    else
-        Notify('Cart stored back in the business wagon yard.', 'success')
-    end
 end
 
 function StoreWagon(wagonId)
@@ -1165,21 +812,6 @@ function RenameWagon(wagon, parkingNPC)
     
     TriggerServerEvent('rsg-wagonmaker:server:renameWagon', wagon.id, input[1])
     
-    Wait(500)
-    OpenParkingMenu(parkingNPC)
-end
-
-function RenameStockWagon(stock, parkingNPC)
-    local input = lib.inputDialog('Rename Cart', {
-        { type = 'input', label = 'New Name', placeholder = stock.name or '', required = true, max = 50 }
-    })
-
-    if not input or not input[1] or input[1] == '' then
-        return
-    end
-
-    TriggerServerEvent('rsg-wagonmaker:server:renameStockWagon', tonumber(stock.id), input[1])
-
     Wait(500)
     OpenParkingMenu(parkingNPC)
 end
@@ -1388,17 +1020,4 @@ CreateThread(function()
         
         Wait(sleep)
     end
-end)
-
-
--- Ensure OpenParkingMenu is available cross-file (ox_target callback in main.lua)
-_G.OpenParkingMenu = OpenParkingMenu
-exports('OpenParkingMenu', OpenParkingMenu)
--- Back button handler restored
-RegisterNUICallback('backToParkingMain', function(_, cb)
-    local npc = GetClosestParkingNPC()
-    if npc then
-        OpenParkingMenu(npc)
-    end
-    cb('ok')
 end)

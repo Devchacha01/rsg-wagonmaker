@@ -6,13 +6,27 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
 
-InCraftingZone = false
-CurrentCraftingZone = nil
+local InCraftingZone = false
+local CurrentCraftingZone = nil
 local ActiveCraftingJob = nil  -- Stores the zone's requiredJob when crafting menu opens
 local CurrentCraftingWagon = nil  -- The wagon being crafted (preview wagon converted to crafting)
 local CurrentCraftingData = nil   -- Data about the current crafting session
+local CurrentCraftProject = nil  -- Server-driven progressive crafting state
+-- Finalization is server-authoritative; only delete the crafted local wagon after the server confirms.
+local PendingFinalize = false
+local PendingFinalizeWagon = nil
+local PendingFinalizeData = nil
 local CraftingPrompt = nil
-local CraftingGroup = GetRandomIntInRange(0, 0xffffff)
+local CraftingGroup
+do
+    -- RedM sometimes does not expose GetRandomIntInRange as a global; fall back to Lua RNG.
+    if type(GetRandomIntInRange) == 'function' then
+        CraftingGroup = GetRandomIntInRange(0, 0xffffff)
+    else
+        math.randomseed(GetGameTimer() or os.time())
+        CraftingGroup = math.random(0, 0xffffff)
+    end
+end
 
 -- ========================================
 -- Prompt Setup
@@ -112,7 +126,7 @@ function OpenCraftingMenu()
     })
     
     -- Management Option (Boss/Manager)
-    if PlayerData.job.grade.level >= Config.JobGrades.manager then
+    if PlayerData and PlayerData.job and PlayerData.job.grade and PlayerData.job.grade.level >= Config.JobGrades.manager then
         table.insert(options, {
             title = '💼 Management',
             description = 'Manage employees and finances',
@@ -147,7 +161,7 @@ function OpenCraftingMenu()
     })
     
     -- Management
-    if PlayerData.job.grade.level >= Config.JobGrades.manager then
+    if PlayerData and PlayerData.job and PlayerData.job.grade and PlayerData.job.grade.level >= Config.JobGrades.manager then
         table.insert(nuiOptions, {
             icon = 'briefcase',
             label = 'Management',
@@ -175,8 +189,12 @@ function OpenCategoryMenu(category, playerMaterials)
         if wagon.category == category then
             -- Check if player meets grade requirement
             local meetsGrade = true
-            if wagon.requiredGrade and PlayerData.job then
-                meetsGrade = PlayerData.job.grade.level >= wagon.requiredGrade
+            if wagon.requiredGrade then
+                if PlayerData and PlayerData.job and PlayerData.job.grade and PlayerData.job.grade.level then
+                    meetsGrade = PlayerData.job.grade.level >= wagon.requiredGrade
+                else
+                    meetsGrade = false
+                end
             end
             
             -- Build material list
@@ -256,6 +274,15 @@ RegisterNUICallback('mainMenuSelect', function(data, cb)
     end
     
     cb('ok')
+end)
+
+RegisterNUICallback('backToCraftingMain', function(_, cb)
+    SetNuiFocus(false, false)
+    SendNUIMessage({ action = 'close' })
+    -- Reopen crafting main menu
+    Wait(50)
+    OpenCraftingMenu()
+    if cb then cb('ok') end
 end)
 
 -- Emergency command to unlock cursor/UI
@@ -347,7 +374,7 @@ function OpenWagonCatalog()
     for model, data in pairs(Config.Wagons) do
         -- Check job grade requirement
         local canSee = true
-        if data.requiredGrade and PlayerData.job.grade.level < data.requiredGrade then
+        if data.requiredGrade and (not PlayerData or not PlayerData.job or not PlayerData.job.grade or PlayerData.job.grade.level < data.requiredGrade) then
             canSee = false -- Or show as locked
         end
         
@@ -475,16 +502,43 @@ function FixWagonWheel()
     local ped = PlayerPedId()
     local wagonCoords = GetEntityCoords(CurrentCraftingWagon)
     local playerCoords = GetEntityCoords(ped)
-    
     -- Face towards the wagon
     local heading = GetHeadingFromVector_2d(wagonCoords.x - playerCoords.x, wagonCoords.y - playerCoords.y)
     SetEntityHeading(ped, heading)
-    Wait(100)
-    
-    -- Play hammering scenario animation
-    -- specific RedM scenario for hammering/repairing
-    TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_HAMMER_TABLE', -1, true)
-    
+    Wait(25)
+
+    -- Play a RedM/RDR2-compatible repair/hammer animation WITHOUT relocating the player.
+    -- Keep this snappy: cap total load/wait time to avoid long delays before the progress bar starts.
+    local function TryPlayAnim(dict, anim, maxWaitMs)
+        RequestAnimDict(dict)
+        local deadline = GetGameTimer() + (maxWaitMs or 200)
+        while not HasAnimDictLoaded(dict) and GetGameTimer() < deadline do
+            Wait(10)
+        end
+        if HasAnimDictLoaded(dict) then
+            -- Flag 1: repeat/loop; does not warp player.
+            TaskPlayAnim(ped, dict, anim, 1.0, 1.0, -1, 1, 0.0, false, false, false)
+            return true
+        end
+        return false
+    end
+
+    local started = false
+    local animFallbacks = {
+        { dict = 'amb_work@world_human_hammer@male_a@base', anim = 'base' },
+        { dict = 'amb_work@world_human_hammer@table@male_a@base', anim = 'base' },
+        { dict = 'amb_work@world_human_repair_wagon_wheel@male_a@base', anim = 'base' },
+        { dict = 'mech_repair@world_human_repair@male_a@base', anim = 'base' },
+    }
+
+    -- Cap total time spent attempting to load/play anims.
+    local totalDeadline = GetGameTimer() + 600
+    for _, a in ipairs(animFallbacks) do
+        if GetGameTimer() >= totalDeadline then break end
+        started = TryPlayAnim(a.dict, a.anim, 200)
+        if started then break end
+    end
+
     -- Show progress bar with crafting animation
     local success = lib.progressBar({
         duration = 12000,
@@ -502,22 +556,23 @@ function FixWagonWheel()
     ClearPedTasks(ped)
     
     if success then
-        -- Tell server to finalize the craft (no netId - wagon is local)
-        TriggerServerEvent('rsg-wagonmaker:server:finalizeCraftLocal', 
-            CurrentCraftingData.model,
-            CurrentCraftingData.name,
-            CurrentCraftingData.customization,
+        -- Tell server to finalize the craft (server will validate materials + add to business stock)
+        PendingFinalize = true
+        PendingFinalizeWagon = CurrentCraftingWagon
+        PendingFinalizeData = CurrentCraftingData
+
+        -- Remove interaction options while we wait for server confirmation.
+        if PendingFinalizeWagon and DoesEntityExist(PendingFinalizeWagon) and Config.UseOxTarget then
+            exports.ox_target:removeLocalEntity(PendingFinalizeWagon, {'wagonmaker_fix_wheel', 'wagonmaker_cancel_craft'})
+            FreezeEntityPosition(PendingFinalizeWagon, true)
+        end
+
+        TriggerServerEvent('rsg-wagonmaker:server:finalizeCraftLocal',
+            PendingFinalizeData.model,
+            PendingFinalizeData.name,
+            PendingFinalizeData.customization,
             ActiveCraftingJob  -- Pass job for validation
         )
-        
-        -- Clean up local tracking
-        if CurrentCraftingWagon and DoesEntityExist(CurrentCraftingWagon) then
-            exports.ox_target:removeLocalEntity(CurrentCraftingWagon, {'wagonmaker_fix_wheel', 'wagonmaker_cancel_craft'})
-            -- Delete the local wagon (player will get it from parking)
-            DeleteEntity(CurrentCraftingWagon)
-        end
-        CurrentCraftingWagon = nil
-        CurrentCraftingData = nil
     else
         Notify('Wheel fix cancelled', 'inform')
     end
@@ -525,7 +580,9 @@ end
 
 function CancelCrafting()
     if CurrentCraftingWagon and DoesEntityExist(CurrentCraftingWagon) then
-        exports.ox_target:removeLocalEntity(CurrentCraftingWagon, {'wagonmaker_fix_wheel', 'wagonmaker_cancel_craft'})
+        if Config.UseOxTarget then
+            exports.ox_target:removeLocalEntity(CurrentCraftingWagon, {'wagonmaker_fix_wheel', 'wagonmaker_cancel_craft'})
+        end
         DeleteEntity(CurrentCraftingWagon)
     end
     CurrentCraftingWagon = nil
@@ -537,17 +594,54 @@ end
 -- Handle craft success
 RegisterNetEvent('rsg-wagonmaker:client:craftSuccess', function(wagonLabel)
     Notify('Successfully crafted ' .. wagonLabel .. '! Visit Wagon Yard to retrieve it.', 'success')
+
+    -- Clean up only after server confirms stock entry creation.
+    if PendingFinalize and PendingFinalizeWagon and DoesEntityExist(PendingFinalizeWagon) then
+        DeleteEntity(PendingFinalizeWagon)
+    end
+
+    PendingFinalize = false
+    PendingFinalizeWagon = nil
+    PendingFinalizeData = nil
+    CurrentCraftingWagon = nil
+    CurrentCraftingData = nil
 end)
 
 -- Handle craft failed
 RegisterNetEvent('rsg-wagonmaker:client:craftFailed', function(reason)
     Notify(reason or 'Crafting failed', 'error')
-    
-    if CurrentCraftingWagon and DoesEntityExist(CurrentCraftingWagon) then
-        exports.ox_target:removeLocalEntity(CurrentCraftingWagon, {'wagonmaker_fix_wheel', 'wagonmaker_cancel_craft'})
+
+    -- If finalization failed, keep the wagon so the player can try again.
+    if PendingFinalize and PendingFinalizeWagon and DoesEntityExist(PendingFinalizeWagon) then
+        FreezeEntityPosition(PendingFinalizeWagon, false)
+
+        if Config.UseOxTarget then
+            exports.ox_target:addLocalEntity(PendingFinalizeWagon, {
+                {
+                    name = 'wagonmaker_fix_wheel',
+                    icon = 'fas fa-wrench',
+                    label = '🔧 Fix Wagon Wheel',
+                    onSelect = function()
+                        FixWagonWheel()
+                    end,
+                    distance = 3.0
+                },
+                {
+                    name = 'wagonmaker_cancel_craft',
+                    icon = 'fas fa-times',
+                    label = '❌ Cancel Crafting',
+                    onSelect = function()
+                        CancelCrafting()
+                    end,
+                    distance = 3.0
+                }
+            })
+        end
     end
-    CurrentCraftingWagon = nil
-    CurrentCraftingData = nil
+
+    PendingFinalize = false
+    PendingFinalizeWagon = nil
+    PendingFinalizeData = nil
 end)
 
 -- Delete any non-player peds within range of wagon (catches horses)
@@ -740,10 +834,39 @@ end
 -- Server Response Handlers
 -- ========================================
 
-RegisterNetEvent('rsg-wagonmaker:client:craftSuccess', function(wagonLabel)
-    Notify(GetLocale('crafting_complete', wagonLabel), 'success')
+-- These events are emitted by the server for the progressive/business crafting flow.
+-- Keep these handlers lightweight; they should only update client state and inform the player.
+
+RegisterNetEvent('rsg-wagonmaker:client:setCraftProject', function(payload)
+    -- payload: { projectId, progress, complete, missing }
+    CurrentCraftProject = payload
+    if payload and payload.progress ~= nil then
+        Notify(('Project progress: %s%%'):format(tostring(payload.progress)), 'inform')
+    end
 end)
 
-RegisterNetEvent('rsg-wagonmaker:client:craftFailed', function(reason)
-    Notify(reason or GetLocale('crafting_failed'), 'error')
+RegisterNetEvent('rsg-wagonmaker:client:craftProgress', function(payload)
+    -- payload: { projectId, progress, complete, missing, contributed }
+    CurrentCraftProject = payload
+    if payload and payload.progress ~= nil then
+        Notify(('Project progress: %s%%'):format(tostring(payload.progress)), 'inform')
+    end
+    if payload and payload.complete then
+        Notify('Project complete. Your wagon has been added to business stock.', 'success')
+    end
 end)
+
+RegisterNetEvent('rsg-wagonmaker:client:craftCancelled', function(payload)
+    -- payload: { projectId, refunded = { [item]=amount } }
+    CurrentCraftProject = nil
+    Notify('Crafting project cancelled.', 'inform')
+end)
+
+-- Generic server-driven notifications
+RegisterNetEvent('rsg-wagonmaker:client:notify', function(message, ntype)
+    if message == nil then return end
+    Notify(tostring(message), ntype or 'inform')
+end)
+
+-- Ensure OpenCraftingMenu is available as a global for client/main.lua
+_G.OpenCraftingMenu = OpenCraftingMenu

@@ -4,6 +4,8 @@ Config = {}
 -- General Settings
 -------------------------------------------------
 Config.Debug = false
+-- Enables verbose server/client logs for progressive crafting contributions, stash usage, refunds, etc.
+-- Safe to leave in production (disabled by default).
 
 -------------------------------------------------
 -- Job Settings
@@ -44,6 +46,44 @@ Config.MaxPreviewTime = 300                 -- Seconds before preview auto-delet
 Config.CraftingAnimTime = 30000             -- Default crafting time in ms
 
 -------------------------------------------------
+-- Progressive Crafting
+-- If true: players can deliver materials over time (no need to hold all parts at once).
+-- The build completes when all required materials have been delivered.
+-------------------------------------------------
+Config.ProgressiveCrafting = true
+-- ========================================
+-- Business Ownership Mode
+-- ========================================
+-- When true, wagon builds and finished wagons belong to the business (job),
+-- not the individual who started the project. Any authorized employee can contribute.
+Config.BusinessOwnership = true
+
+-- Who can contribute materials / progress builds
+Config.BuildPermissions = {
+    minGrade = 0, -- 0 = any employee in the job
+}
+
+-- Who can cancel projects (recommended to restrict; cancellation refunds to shop storage)
+Config.CancelPermissions = {
+    minGrade = 2, -- default: manager+
+}
+
+-- Who can transfer business-owned stock wagons to customers
+Config.TransferPermissions = {
+    minGrade = 2, -- default: manager+
+}
+
+-- Transfer rules
+Config.TransferRules = {
+    depositToCompanyFunds = true,
+    requireCustomerNearby = true,
+    maxDistance = 3.0,
+    requirePayment = false,
+    moneyType = "cash",
+}
+
+
+-------------------------------------------------
 -- ox_target Settings
 -------------------------------------------------
 Config.UseOxTarget = true                   -- Use ox_target for wagon interactions (requires ox_target)
@@ -51,7 +91,9 @@ Config.UseOxTarget = true                   -- Use ox_target for wagon interacti
 -------------------------------------------------
 -- Wagon Inventory Settings
 -------------------------------------------------
-Config.UseWagonInventory = true             -- Enable wagon stash (requires ox_inventory)
+-- This resource's storage features are implemented via rsg-inventory job stashes.
+-- Leave this disabled unless you have explicitly integrated ox_inventory.
+Config.UseWagonInventory = false
 
 
 -------------------------------------------------
@@ -60,12 +102,6 @@ Config.UseWagonInventory = true             -- Enable wagon stash (requires ox_i
 Config.MoneyType = "cash"                   -- "cash" or "bank"
 
 -------------------------------------------------
--- Job Configuration
--------------------------------------------------
-Config.JobRequired = true -- Set to true to require a job to craft wagons
-Config.JobMode = "location" -- "single" (one job everywhere) or "location" (different jobs per town)
-Config.GlobalJobName = "wagon_maker" -- Used if JobMode is 'single'
-
 Config.JobGrades = {
     boss = 3,
     manager = 2,
@@ -78,8 +114,8 @@ Config.JobGrades = {
 -------------------------------------------------
 Config.Keys = {
     Interact = "INPUT_FRONTEND_ACCEPT",     -- Enter/E key
-    RotateLeft = "INPUT_FRONTEND_LEFT",     -- Left Arrow Key (0xA65EBAB4)
-    RotateRight = "INPUT_FRONTEND_RIGHT",   -- Right Arrow Key (0xDEB34313)
+    RotateLeft = "INPUT_FRONTEND_LB",       -- Q key
+    RotateRight = "INPUT_FRONTEND_RB",      -- E key
     Cancel = "INPUT_FRONTEND_CANCEL"        -- Backspace
 }
 
@@ -164,6 +200,7 @@ Config.ParkingNPCs = {
     {
         id = 1,
         name = "Wagon Yard",
+        job = "wagon_valentine",
         coords = vector3(-265.56, 686.32, 113.38),
         heading = 227.37,
         model = "s_m_m_valdealer_01",
@@ -184,6 +221,7 @@ Config.ParkingNPCs = {
     {
         id = 2,
         name = "Wagon Yard - Rhodes",
+        job = "wagon_rhodes",
         coords = vector3(1459.62, -1374.00, 78.90),
         heading = 162.62,
         model = "s_m_m_valdealer_01",
@@ -204,6 +242,7 @@ Config.ParkingNPCs = {
     {
         id = 3,
         name = "Wagon Yard - Saint Denis",
+        job = "wagon_saint",
         coords = vector3(2690.47, -875.45, 42.47),
         heading = 22.93,
         model = "s_m_m_valdealer_01",
@@ -224,6 +263,7 @@ Config.ParkingNPCs = {
     {
         id = 4,
         name = "Wagon Yard - Blackwater",
+        job = "wagon_blackwater",
         coords = vector3(-854.54, -1376.22, 43.66),
         heading = 275.28,
         model = "s_m_m_valdealer_01",
@@ -244,6 +284,7 @@ Config.ParkingNPCs = {
     {
         id = 5,
         name = "Wagon Yard - Strawberry",
+        job = "wagon_strawberry",
         coords = vector3(-1815.75, -576.62, 156.05),
         heading = 255.39,
         model = "s_m_m_valdealer_01",
@@ -264,6 +305,7 @@ Config.ParkingNPCs = {
     {
         id = 6,
         name = "Wagon Yard - Armadillo",
+        job = "wagon_armadillo",
         coords = vector3(-3700.76, -2570.86, -13.68),
         heading = 274.21,
         model = "s_m_m_valdealer_01",
@@ -284,6 +326,7 @@ Config.ParkingNPCs = {
     {
         id = 7,
         name = "Wagon Yard - Tumbleweed",
+        job = "wagon_tumbleweed",
         coords = vector3(-5549.04, -3046.92, -0.99),
         heading = 83.94,
         model = "s_m_m_valdealer_01",
