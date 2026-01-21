@@ -16,11 +16,11 @@ shared_scripts {
 }
 
 client_scripts {
-    'client/main.lua',
     'client/zones.lua',
     'client/crafting.lua',
     'client/preview.lua',
-    'client/parking.lua'
+    'client/parking.lua',
+    'client/main.lua',
 }
 
 server_scripts {

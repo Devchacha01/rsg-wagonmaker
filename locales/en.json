@@ -42,7 +42,7 @@
     "transfer_declined": "Transfer declined.",
     "transfer_cancelled": "Transfer cancelled by owner.",
     
-    "preview_started": "Previewing %s - Use Left/Right Arrow to rotate",
+    "preview_started": "Previewing %s - Use Q/E to rotate",
     "preview_timeout": "Preview time expired.",
     
     "zone_placed": "%s zone placed successfully!",

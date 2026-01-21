@@ -132,7 +132,6 @@ end)
 
 RegisterNetEvent('rsg-wagonmaker:server:openJobStash', function(jobName)
     local src = source
-    print('^2[RSG-WagonMaker] Server received openJobStash for: ' .. tostring(jobName) .. ' from ' .. src .. '^7')
     local Player = RSGCore.Functions.GetPlayer(src)
     if not Player then return end
     

@@ -13,7 +13,7 @@
 - **Immersive UI**: Vintage-styled crafting menu with dynamic recipe lists and material requirements.
 - **Interactive 3D Preview**: Before crafting, effectively "test drive" the look of the wagon.
     - **Visual Customization**: Change **Tints** and **Liveries** in real-time.
-    - **Rotation**: Use **Left / Right Arrow Key** (Configurable in `config.lua`) to rotate the wagon and inspect it from all angles.
+    - **Rotation**: Use **Q / E** keys to rotate the wagon and inspect it from all angles.
     - **Networked**: Other players can see what you are previewing!
 - **Material Economy**: Wagons require wood, iron, leather, and other resources, driving the server's economy.
 
@@ -128,7 +128,7 @@ Config.CraftingNPCs = {
 2.  **Alt-Click (Third Eye)** and select **"Craft Wagon"**.
 3.  Choose a wagon model.
 4.  **Preview It**:
-    -   Use **Left / Right Arrow Key** (or configured keys) to rotate the wagon.
+    -   Use **Q / E** to rotate the wagon.
     -   Use the menu to try different **Liveries** and **Colors**.
 5.  **Craft**: Be sure you have the materials!
     -   Once crafted, the wagon is sent to the **Stable Master**.

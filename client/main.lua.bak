@@ -309,8 +309,7 @@ function SpawnParkingNPCs()
                     icon = 'fas fa-warehouse',
                     label = 'Access Wagon Yard',
                     onSelect = function()
-                        -- Use an event bridge to avoid export/global ordering issues.
-                        TriggerEvent('rsg-wagonmaker:client:openParkingMenu', npc)
+                        OpenParkingMenu(npc)
                     end,
                     distance = 3.0
                 }
@@ -449,6 +448,7 @@ end
 -- If you need markers back, uncomment this loop or use the legacy zones configuration.
 
 -- CreateThread(function()
+--    ...
 -- end)
 
 -- ========================================
