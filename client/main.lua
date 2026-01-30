@@ -11,6 +11,7 @@ Zones = {}
 ParkingNPCs = {}
 CraftingNPCs = {}
 ParkingBlips = {}
+CraftingBlips = {}
 
 -- Prompt references
 local PromptGroup = GetRandomIntInRange(0, 0xffffff)
@@ -165,6 +166,24 @@ function SpawnCraftingNPC(zone)
             }
         })
     end
+
+    -- Create Blip
+    if zone.blip and zone.blip.enabled then
+        local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, zone.x, zone.y, zone.z)
+        if blip and blip ~= 0 then
+            local spriteHash = zone.blip.sprite
+            if type(spriteHash) == 'string' then
+                spriteHash = GetHashKey(spriteHash)
+            end
+            
+            Citizen.InvokeNative(0x74F74D3207ED525C, blip, spriteHash or 52009257, true)
+            local nameStr = CreateVarString(10, 'LITERAL_STRING', zone.blip.name or "Wagon Maker")
+            Citizen.InvokeNative(0x9CB1A1623062F402, blip, nameStr)
+            Citizen.InvokeNative(0xD38744167B2FA257, blip, zone.blip.scale or 0.8)
+            CraftingBlips[zone.id] = blip
+            if Config.Debug then print("[WagonMaker] Created blip for " .. zone.id .. " with sprite " .. tostring(spriteHash)) end
+        end
+    end
 end
 
 function DrawText3D(x, y, z, text)
@@ -189,6 +208,10 @@ RegisterNetEvent('rsg-wagonmaker:client:loadZones', function(zones)
             DeleteEntity(ped)
         end
     end
+    for _, blip in pairs(CraftingBlips) do
+        if DoesBlipExist(blip) then RemoveBlip(blip) end
+    end
+    CraftingBlips = {}
     CraftingNPCs = {}
     Zones = {}
 
@@ -216,7 +239,8 @@ RegisterNetEvent('rsg-wagonmaker:client:loadZones', function(zones)
                 heading = npcData.coords.w or 0.0,
                 model = npcData.model,
                 radius = 2.0,
-                requiredJob = npcData.job -- specialized job check support
+                requiredJob = npcData.job,
+                blip = npcData.blip
             }
             table.insert(Zones, zone)
             SpawnCraftingNPC(zone)
@@ -544,6 +568,12 @@ AddEventHandler('onResourceStop', function(resourceName)
     
     -- Remove blips
     for _, blip in pairs(ParkingBlips) do
+        if DoesBlipExist(blip) then
+            RemoveBlip(blip)
+        end
+    end
+
+    for _, blip in pairs(CraftingBlips) do
         if DoesBlipExist(blip) then
             RemoveBlip(blip)
         end

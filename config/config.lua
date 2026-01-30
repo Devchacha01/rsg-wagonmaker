@@ -97,7 +97,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_valentine",
         previewPoint = vector3(-238.74, 702.13, 113.52),
-        previewHeading = 281.85
+        previewHeading = 281.85,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store", -- General Store (Building/Bag)
+            name = "Wagon Maker - Valentine",
+            scale = 0.8
+        }
     },
     {
         id = "static_rhodes",
@@ -106,7 +112,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_rhodes",
         previewPoint = vector3(1472.25, -1378.08, 78.40),
-        previewHeading = 224.98
+        previewHeading = 224.98,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Rhodes",
+            scale = 0.8
+        }
     },
     {
         id = "static_saint_denis",
@@ -115,7 +127,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_saint",
         previewPoint = vector3(2702.58, -875.31, 42.38),
-        previewHeading = 167.47
+        previewHeading = 167.47,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Saint Denis",
+            scale = 0.8
+        }
     },
     {
         id = "static_blackwater",
@@ -124,7 +142,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_blackwater",
         previewPoint = vector3(-877.50, -1383.58, 43.61),
-        previewHeading = 276.05
+        previewHeading = 276.05,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Blackwater",
+            scale = 0.8
+        }
     },
     {
         id = "static_strawberry",
@@ -133,7 +157,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_strawberry",
         previewPoint = vector3(-1827.84, -577.88, 156.00),
-        previewHeading = 158.78
+        previewHeading = 158.78,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Strawberry",
+            scale = 0.8
+        }
     },
     {
         id = "static_armadillo",
@@ -142,7 +172,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_armadillo",
         previewPoint = vector3(-3686.87, -2575.38, -13.68),
-        previewHeading = 206.74
+        previewHeading = 206.74,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Armadillo",
+            scale = 0.8
+        }
     },
     {
         id = "static_tumbleweed",
@@ -151,7 +187,13 @@ Config.CraftingNPCs = {
         model = "s_m_m_valdealer_01",
         job = "wagon_tumbleweed",
         previewPoint = vector3(-5533.76, -3060.18, -1.26),
-        previewHeading = 274.13
+        previewHeading = 274.13,
+        blip = {
+            enabled = true,
+            sprite = "blip_shop_store",
+            name = "Wagon Maker - Tumbleweed",
+            scale = 0.8
+        }
     }
 }
 
